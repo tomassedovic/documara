@@ -15,5 +15,6 @@ var options = {
 
 sharejs.attach(server, options);
 
-server.listen(8000);
-console.log('Server running at port 8000');
+var PORT = process.argv[2] || 8080;
+server.listen(PORT);
+console.log('Server running at port ' + PORT);
