@@ -15,8 +15,14 @@ $('#login-page form').live('submit', function() {
   return false;
 });
 
+function document_id() {
+  /* Get the database ID of the list. */
+  var regex = /^\/documents\/([-a-zA-Z0-9]+)/
+  return regex.exec(document.location.pathname)[1]
+}
+
 function openDocument() {
-  sharejs.open('thingy', 'text', function(err, doc) {
+  sharejs.open(document_id(), 'text', function(err, doc) {
     if(err) {
       console.log("Error connecting ShareJS:", err);
       if(err === 'forbidden') {

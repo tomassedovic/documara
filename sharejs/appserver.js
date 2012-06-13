@@ -2,6 +2,7 @@ var connect = require('connect');
 var sharejs = require('share').server;
 var parseCookie = require('connect').utils.parseCookie;
 var cookie = require('cookie');
+var url = require('url');
 
 var sessionStore = new connect.session.MemoryStore();
 
@@ -41,6 +42,24 @@ server.use('/login', function(req, res) {
     res.writeHead(403, headers);
     return res.end('{"error": "invalid email or password"}');
   }
+});
+
+server.use('/documents/', function(req, res, next) {
+  var path = url.parse(req.url).path;
+  var fragments = path.split('/');
+  if(fragments.length !== 2) {
+    res.writeHead(404, {});
+    return res.end('invalid path: ' + path);
+  }
+
+  var doc_id = fragments[1];
+  if(doc_id.length === 0) {
+    res.writeHead(200, {});
+    return res.end('documents#index');
+  }
+
+  var options = { path: __dirname + '/static/index.html' }
+  connect.static.send(req, res, next, options)
 });
 
 function validPassword(email, password) {
