@@ -1,11 +1,18 @@
 var connect = require('connect');
 var sharejs = require('share').server;
 var parseCookie = require('connect').utils.parseCookie;
+var cookie = require('cookie');
+
+var sessionStore = new connect.session.MemoryStore();
 
 var server = connect(
   connect.logger(),
   connect.cookieParser(),
-  connect.session({ secret: 'my secret here' }),
+  connect.session({
+    key: 'sid',
+    secret: 'my secret here',
+    store: sessionStore,
+  }),
   connect.bodyParser(),
   connect.static(__dirname + '/static')
 );
@@ -40,24 +47,33 @@ function validPassword(email, password) {
   return (email === 'test@example.com' && password === 'password');
 }
 
-function getSession(headers) {
-  // TODO: read the cookie, decrypt it and load the session
-  //console.log(headers);
-  return {};
+function getSession(headers, callback) {
+  try {
+    parsed = cookie.parse(headers.cookie);
+    // TODO: probably not very robust. Read connect's code and extract the
+    // session key properly
+    session_key = parsed.sid.slice(2, 26);
+    sessionStore.get(session_key, function(err, session) {
+      return callback(session)
+    });
+  }
+  catch(ex) {
+    return callback({});
+  }
 }
 
 function isLoggedIn(session) {
-  // TODO: look up the user in the session, verify their login status
-  return false;
+  return session && session.user && session.user.email;
 }
 
 function authenticateSharejs(agent, action) {
-  session = getSession(agent.headers);
-  if(isLoggedIn(session)) {
-    return action.accept();
-  } else {
-    return action.reject();
-  }
+  session = getSession(agent.headers, function(session) {
+    if(isLoggedIn(session)) {
+      return action.accept();
+    } else {
+      return action.reject();
+    }
+  });
 }
 
 var options = {
