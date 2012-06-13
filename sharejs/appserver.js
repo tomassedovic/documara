@@ -5,13 +5,14 @@ var cookie = require('cookie');
 var url = require('url');
 
 var sessionStore = new connect.session.MemoryStore();
+var sessionSecret = 'my secret here';
 
 var server = connect(
   connect.logger(),
   connect.cookieParser(),
   connect.session({
     key: 'sid',
-    secret: 'my secret here',
+    secret: sessionSecret,
     store: sessionStore,
   }),
   connect.bodyParser(),
@@ -68,10 +69,9 @@ function validPassword(email, password) {
 
 function getSession(headers, callback) {
   try {
-    parsed = cookie.parse(headers.cookie);
-    // TODO: probably not very robust. Read connect's code and extract the
-    // session key properly
-    session_key = parsed.sid.slice(2, 26);
+    var parsed = cookie.parse(headers.cookie);
+    var session_key = connect.utils.parseSignedCookie(
+          parsed.sid, sessionSecret);
     sessionStore.get(session_key, function(err, session) {
       return callback(session)
     });
