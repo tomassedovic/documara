@@ -3,7 +3,8 @@ $(document).ready(function() {
     if(err) {
       console.log("Error connecting ShareJS:", err);
       if(err === 'forbidden') {
-        window.location = '/login';
+        $('#login-page').show();
+        $('#document-page').hide();
       }
     } else {
       var $editor = $('#editor');

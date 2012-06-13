@@ -3,16 +3,25 @@
 <head>
   <title>Share JS Test</title>
   <link rel="stylesheet" href="/style/style.css" />
-</head>
-<body>
-  <h1>Hello World!</h1>
-  <textarea id="editor" disabled="disabled">connecting...</textarea>
+</head> <body>
+
+<section id="login-page">
+    <form action="/login" method="post">
+        <input type="text" name="email" id="email" placeholder="Email"></input>
+        <input type="password" name="password" id="password" placeholder="Password"></input>
+        <input type="submit" name="submit" value="Login"></input>
+    </form>
+</section>
+
+<section id="document-page">
+    <h1>Hello World!</h1>
+    <textarea id="editor" disabled="disabled">connecting...</textarea>
+</section>
 
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/share/share.js"></script>
-  <script src="/share/textarea.js"></script>
-  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="/js/application.js"></script>
-</body>
-</html>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/share/share.js"></script>
+<script src="/share/textarea.js"></script>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script src="/js/application.js"></script>
+</body> </html>
