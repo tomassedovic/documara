@@ -4,18 +4,35 @@ var parseCookie = require('connect').utils.parseCookie;
 
 var server = connect(
   connect.logger(),
+  connect.bodyParser(),
   connect.static(__dirname + '/static')
 );
 
 server.use('/login', function(req, res) {
-  // TODO: serve the login form, verify credentials and set auth session cookie
+  // TODO: verify credentials and set auth session cookie
+  if(req.method !== 'POST') {
+    res.writeHead(405, {});
+    return res.end('HTTP POST the login credentials here.');
+  }
+  var email = req.body.email;
+  var password = req.body.password;
   headers = {
     'Content-Type': 'text/html',
-    'Set-Cookie': 'hello=world; Path=/; HttpOnly'
   }
-  res.writeHead(200, headers);
-  res.end('<h1>Please login</h1>');
+  if(validPassword(email, password)) {
+    headers['Content-Type'] = 'application/json';
+    headers['Set-Cookie'] = 'hello=world; Path=/; HttpOnly';
+    res.writeHead(200, headers);
+    return res.end('{"email": "' + email + '"}');
+  } else {
+    res.writeHead(403, headers);
+    return res.end('{"error": "invalid email or password"}');
+  }
 });
+
+function validPassword(email, password) {
+  return (email === 'test@example.com' && password === 'password');
+}
 
 function getSession(headers) {
   // TODO: read the cookie, decrypt it and load the session
