@@ -3,8 +3,9 @@ var sharejs = require('share').server;
 var parseCookie = require('connect').utils.parseCookie;
 var cookie = require('cookie');
 var url = require('url');
+var RedisSessionStore = require('connect-redis')(connect);
 
-var sessionStore = new connect.session.MemoryStore();
+var sessionStore = new RedisSessionStore;
 var sessionSecret = 'my secret here';
 
 var server = connect(
