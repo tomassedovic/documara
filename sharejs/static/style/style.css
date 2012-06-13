@@ -5,3 +5,7 @@ textarea {
   top: 8em;
   bottom: 3em;
 }
+
+#document-page, #login-page {
+  display: none;
+}
