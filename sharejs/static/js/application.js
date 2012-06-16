@@ -19,7 +19,6 @@ function document_id() {
   /* Get the database ID of the list. */
   var regex = /^\/documents\/([-a-zA-Z0-9]+)/;
   var matches = regex.exec(document.location.pathname);
-  console.log(matches);
   if(matches && matches.length === 2) {
     return matches[1];
   } else {
