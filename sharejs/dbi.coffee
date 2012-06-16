@@ -1,10 +1,10 @@
 redis = require('redis').createClient();
 
-dbi = (db) ->
+dbi = (con) ->
   result =
 
     users: (callback) ->
-      redis.keys '*', (err, data) ->
+      con.keys '*', (err, data) ->
         return callback err, data
 
     createUser: (email, password, callback) ->
