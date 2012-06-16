@@ -1,0 +1,97 @@
+connect = require('connect')
+sharejs = require('share').server
+parseCookie = require('connect').utils.parseCookie
+cookie = require('cookie')
+url = require('url')
+RedisSessionStore = require('connect-redis')(connect)
+redis = require('redis').createClient()
+u_ = require('underscore')
+
+
+sessionStore = new RedisSessionStore
+sessionSecret = 'my secret here'
+
+server = connect(connect.logger(), connect.cookieParser(), connect.session(
+  key: 'sid'
+  secret: sessionSecret
+  store: sessionStore
+), connect.bodyParser(), connect.static("#{__dirname}/static"))
+
+
+server.use '/login', (req, res) ->
+  req.session.user = (req.session.user or {})
+  headers = 'Content-Type': 'application/json'
+  if req.method is 'GET'
+    res.writeHead 200, headers
+    return res.end(JSON.stringify(req.session.user) + '\n')
+  else if req.method isnt 'POST'
+    res.writeHead 405, headers
+    return res.end('{"error": "HTTP POST the login credentials here."')
+  email = req.body.email
+  password = req.body.password
+  if validPassword(email, password)
+    req.session.user = email: req.body.email
+    res.writeHead 200, headers
+    res.end JSON.stringify(req.session.user) + '\n'
+  else
+    req.session.user = {}
+    res.writeHead 403, headers
+    res.end '{"error": "invalid email or password"}'
+
+
+server.use '/documents/', (req, res, next) ->
+  path = url.parse(req.url).path
+  fragments = path.split('/')
+  if fragments.length isnt 2
+    res.writeHead 404, {}
+    return res.end("invalid path: #{path}")
+  doc_id = fragments[1]
+  if doc_id.length is 0
+    return redis.keys('ShareJS:doc:*', (err, keys) ->
+      if err
+        res.writeHead 500, {}
+        return res.end('redis error')
+      res.writeHead 200, {}
+      doc_keys = u_.map(keys, (k) ->
+        k.slice 12
+      )
+      res.end doc_keys.join('\n')
+    )
+  options = path: __dirname + '/static/index.html'
+  connect.static.send req, res, next, options
+
+
+validPassword = (email, password) ->
+  email is 'test@example.com' and password is 'password'
+
+getSession = (headers, callback) ->
+  try
+    parsed = cookie.parse(headers.cookie)
+    session_key = connect.utils.parseSignedCookie(parsed.sid, sessionSecret)
+    sessionStore.get session_key, (err, session) ->
+      callback session
+  catch ex
+    return callback {}
+
+isLoggedIn = (session) ->
+  session and session.user and session.user.email
+
+authenticateSharejs = (agent, action) ->
+  session = getSession(agent.headers, (session) ->
+    if isLoggedIn(session)
+      action.accept()
+    else
+      action.reject()
+  )
+
+
+options =
+  db:
+    type: 'redis'
+
+  auth: authenticateSharejs
+
+sharejs.attach server, options
+PORT = process.argv[2] or 8080
+server.listen PORT
+console.log "Server running at port #{PORT}"
