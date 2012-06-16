@@ -1,4 +1,4 @@
-$('#login-page form').live('submit', function() {
+$('#login form').live('submit', function() {
   var $form = $(this);
   var params = $form.serialize();
   $.ajax({
@@ -6,7 +6,7 @@ $('#login-page form').live('submit', function() {
     type: 'POST',
     data: params,
     success: function() {
-      openDocument();
+      setupUI();
     },
     error: function() {
       $form.find('.alert').show();
@@ -45,16 +45,13 @@ function openDocument() {
   });
 }
 
-
-
 function showPage(id) {
   $('section').hide();
   console.log('section #' + id);
   $('section#' + id).show();
 }
 
-
-$(document).ready(function() {
+function setupUI() {
   if(!document_id()) {
     showPage('document-index');
     $.ajax('/api/documents/', {
@@ -74,4 +71,9 @@ $(document).ready(function() {
     return;
   }
   openDocument();
+}
+
+
+$(document).ready(function() {
+  setupUI();
 });
