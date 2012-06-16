@@ -4,6 +4,8 @@ var parseCookie = require('connect').utils.parseCookie;
 var cookie = require('cookie');
 var url = require('url');
 var RedisSessionStore = require('connect-redis')(connect);
+var redis = require('redis').createClient();
+var u_ = require('underscore');
 
 var sessionStore = new RedisSessionStore;
 var sessionSecret = 'my secret here';
@@ -56,8 +58,16 @@ server.use('/documents/', function(req, res, next) {
 
   var doc_id = fragments[1];
   if(doc_id.length === 0) {
-    res.writeHead(200, {});
-    return res.end('documents#index');
+    return redis.keys('ShareJS:doc:*', function(err, keys) {
+      if(err) {
+        res.writeHead(500, {});
+        return res.end('redis error');
+      }
+
+      res.writeHead(200, {});
+      doc_keys = u_.map(keys, function(k) { return k.slice(12) });
+      return res.end(doc_keys.join('\n'));
+    });
   }
 
   var options = { path: __dirname + '/static/index.html' }
