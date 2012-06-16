@@ -6,6 +6,7 @@ url = require('url')
 RedisSessionStore = require('connect-redis')(connect)
 redis = require('redis').createClient()
 u_ = require('underscore')
+db = require('./dbi').connect()
 
 
 sessionConfig =
@@ -36,12 +37,18 @@ server.post '/login', (req, res) ->
   req.session.user = (req.session.user or {})
   email = req.body.email
   password = req.body.password
-  if validPassword(email, password)
-    req.session.user = email: req.body.email
-    sendJSON res, req.session.user, 200
-  else
-    req.session.user = {}
-    sendJSON res, 403, {"error": "invalid email or password"}
+  db.validCredentials email, password, (err, valid) ->
+    if valid
+      req.session.user = email: req.body.email
+      sendJSON res, req.session.user, 200
+    else
+      req.session.user = {}
+      sendJSON res, 403, {"error": "invalid email or password"}
+
+
+server.post '/logout', (req, res) ->
+  req.session.user = {}
+  res.redirect '/'
 
 
 server.get '/documents/:id', (req, res) ->
@@ -62,9 +69,6 @@ sendJSON = (res, data, code) ->
   res.header 'Content-Type', 'application/json; charset=utf-8'
   res.charset = 'utf-8'
   res.send JSON.stringify(data) + '\n', code
-
-validPassword = (email, password) ->
-  email is 'test@example.com' and password is 'password'
 
 getSession = (headers, callback) ->
   try
