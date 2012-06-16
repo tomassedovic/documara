@@ -1,6 +1,6 @@
 connect = require('connect')
+express = require('express')
 sharejs = require('share').server
-parseCookie = require('connect').utils.parseCookie
 cookie = require('cookie')
 url = require('url')
 RedisSessionStore = require('connect-redis')(connect)
@@ -8,14 +8,18 @@ redis = require('redis').createClient()
 u_ = require('underscore')
 
 
-sessionStore = new RedisSessionStore
-sessionSecret = 'my secret here'
-
-server = connect(connect.logger(), connect.cookieParser(), connect.session(
+sessionConfig =
   key: 'sid'
-  secret: sessionSecret
-  store: sessionStore
-), connect.bodyParser(), connect.static("#{__dirname}/static"))
+  secret: 'my secret here'
+  store: new RedisSessionStore
+
+
+server = express.createServer()
+server.use connect.logger()
+server.use connect.cookieParser()
+server.use connect.session(sessionConfig)
+server.use connect.bodyParser()
+server.use connect.static("#{__dirname}/static")
 
 
 server.use '/login', (req, res) ->
@@ -47,16 +51,13 @@ server.use '/documents/', (req, res, next) ->
     return res.end("invalid path: #{path}")
   doc_id = fragments[1]
   if doc_id.length is 0
-    return redis.keys('ShareJS:doc:*', (err, keys) ->
+    return redis.keys 'ShareJS:doc:*', (err, keys) ->
       if err
         res.writeHead 500, {}
         return res.end('redis error')
       res.writeHead 200, {}
-      doc_keys = u_.map(keys, (k) ->
-        k.slice 12
-      )
+      doc_keys = u_.map keys, (k) -> k.slice 12
       res.end doc_keys.join('\n')
-    )
   options = path: __dirname + '/static/index.html'
   connect.static.send req, res, next, options
 
@@ -67,31 +68,34 @@ validPassword = (email, password) ->
 getSession = (headers, callback) ->
   try
     parsed = cookie.parse(headers.cookie)
-    session_key = connect.utils.parseSignedCookie(parsed.sid, sessionSecret)
-    sessionStore.get session_key, (err, session) ->
+    [store, secret] = [sessionConfig.store, sessionConfig.secret]
+
+    session_key = connect.utils.parseSignedCookie(parsed.sid, secret)
+    store.get session_key, (err, session) ->
       callback session
   catch ex
+    console.warn 'Exception inside getSession:', ex
     return callback {}
 
 isLoggedIn = (session) ->
   session and session.user and session.user.email
 
 authenticateSharejs = (agent, action) ->
-  session = getSession(agent.headers, (session) ->
+  session = getSession agent.headers, (session) ->
     if isLoggedIn(session)
       action.accept()
     else
       action.reject()
-  )
 
 
-options =
+sharejsOptions =
   db:
     type: 'redis'
-
   auth: authenticateSharejs
 
-sharejs.attach server, options
+sharejs.attach server, sharejsOptions
+
+
 PORT = process.argv[2] or 8080
 server.listen PORT
 console.log "Server running at port #{PORT}"
