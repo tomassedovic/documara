@@ -19,48 +19,49 @@ server.use connect.logger()
 server.use connect.cookieParser()
 server.use connect.session(sessionConfig)
 server.use connect.bodyParser()
+
+
+server.get '/', (req, res) ->
+  res.redirect '/documents/'
+
+# If this is before the 'GET /' route, it will override it
 server.use connect.static("#{__dirname}/static")
 
 
-server.use '/login', (req, res) ->
+server.get '/login', (req, res) ->
+  sendJSON res, req.session.user or {}, 200
+
+
+server.post '/login', (req, res) ->
   req.session.user = (req.session.user or {})
-  headers = 'Content-Type': 'application/json'
-  if req.method is 'GET'
-    res.writeHead 200, headers
-    return res.end(JSON.stringify(req.session.user) + '\n')
-  else if req.method isnt 'POST'
-    res.writeHead 405, headers
-    return res.end('{"error": "HTTP POST the login credentials here."')
   email = req.body.email
   password = req.body.password
   if validPassword(email, password)
     req.session.user = email: req.body.email
-    res.writeHead 200, headers
-    res.end JSON.stringify(req.session.user) + '\n'
+    sendJSON res, req.session.user, 200
   else
     req.session.user = {}
-    res.writeHead 403, headers
-    res.end '{"error": "invalid email or password"}'
+    sendJSON res, 403, {"error": "invalid email or password"}
 
 
-server.use '/documents/', (req, res, next) ->
-  path = url.parse(req.url).path
-  fragments = path.split('/')
-  if fragments.length isnt 2
-    res.writeHead 404, {}
-    return res.end("invalid path: #{path}")
-  doc_id = fragments[1]
-  if doc_id.length is 0
-    return redis.keys 'ShareJS:doc:*', (err, keys) ->
-      if err
-        res.writeHead 500, {}
-        return res.end('redis error')
-      res.writeHead 200, {}
-      doc_keys = u_.map keys, (k) -> k.slice 12
-      res.end doc_keys.join('\n')
-  options = path: __dirname + '/static/index.html'
-  connect.static.send req, res, next, options
+server.get '/documents/:id', (req, res) ->
+  res.sendfile __dirname + '/static/index.html'
 
+
+server.get '/documents/', (req, res) ->
+  return redis.keys 'ShareJS:doc:*', (err, keys) ->
+    if err
+      return res.send 'database error', 500
+    doc_keys = u_.map keys, (k) ->
+      doc_id = k.slice 12
+      "<a href=\"/documents/#{doc_id}\">#{doc_id}</a><br />"
+    return res.send doc_keys.join('\n'), 200
+
+
+sendJSON = (res, data, code) ->
+  res.header 'Content-Type', 'application/json; charset=utf-8'
+  res.charset = 'utf-8'
+  res.send JSON.stringify(data) + '\n', code
 
 validPassword = (email, password) ->
   email is 'test@example.com' and password is 'password'
