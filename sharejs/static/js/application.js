@@ -15,6 +15,19 @@ $('#login form').live('submit', function() {
   return false;
 });
 
+function attach_textbox(doc, $textbox) {
+  $textbox.val(doc.getText());
+  $textbox.live('keyup', function() {
+    doc.set($textbox.val());
+  });
+
+  // This doesn't work for some reason. We need a callback on when this thing
+  // changes
+  doc.on('child op', function() {
+    console.log('title changed');
+  });
+}
+
 function document_id() {
   /* Get the database ID of the list. */
   var regex = /^\/documents\/([-a-zA-Z0-9]+)/;
@@ -27,7 +40,7 @@ function document_id() {
 }
 
 function openDocument() {
-  sharejs.open(document_id(), 'text', function(err, doc) {
+  sharejs.open(document_id(), 'json', function(err, doc) {
     if(err) {
       console.log("Error connecting ShareJS:", err);
       if(err === 'forbidden') {
@@ -36,10 +49,15 @@ function openDocument() {
     } else {
       var $editor = $('#editor');
       $editor.attr('disabled', false);
-
+      if(!doc.get()) {
+        // This is a newly-created document. Initialize it:
+        doc.set({body: '', title: ''});
+      }
+      var subdoc = doc.at('body');
       // ShareJS doesn't support jQuery objects, we must use the native DOM
       // representation for $editor
-      doc.attach_textarea($editor[0]);
+      subdoc.attach_textarea($editor[0]);
+      attach_textbox(doc.at('title'), $('#title'));
       showPage('document-show');
     }
   });
