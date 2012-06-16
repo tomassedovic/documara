@@ -58,14 +58,19 @@ function showPage(id) {
 $(document).ready(function() {
   if(!document_id()) {
     showPage('document-index');
-    $.getJSON('/api/documents/', function(docs) {
-      var $documents = $('#documents');
-      jQuery.each(docs, function(index, doc_id) {
-        var $li = $('<li />');
-        var $a = $('<a href="/documents/'+ doc_id + '">' + doc_id + '</a>');
-        $li.append($a);
-        $documents.append($li);
-      });
+    $.ajax('/api/documents/', {
+      success: function(docs) {
+        var $documents = $('#documents');
+        jQuery.each(docs, function(index, doc_id) {
+          var $li = $('<li />');
+          var $a = $('<a href="/documents/'+ doc_id + '">' + doc_id + '</a>');
+          $li.append($a);
+          $documents.append($li);
+        });
+      },
+      statusCode: {
+        401: function() { showPage('login'); }
+      }
     });
     return;
   }

@@ -5,12 +5,6 @@ bcrypt = require 'bcrypt'
 dbi = (con) ->
   result =
 
-    users: (callback) ->
-      callback = (() ->) unless callback?
-      con.keys '*', (err, data) ->
-        return callback err, data
-
-
     createUser: (login, password, callback) ->
       callback = (() ->) unless callback?
       @findUserIdFromLogin login, (err, user_id) ->
@@ -56,9 +50,30 @@ dbi = (con) ->
         return callback null, bcrypt.compareSync(password, user.password)
 
 
-    documents: (callback) ->
-      return callback {}
+    createDocument: (owner_login, doc, callback) ->
+      callback = (() ->) unless callback?
+      @findUserIdFromLogin owner_login, (err, user_id) ->
+        if err
+          return callback err, null
+        unless user_id
+          return callback { error: 'unknown user' }, null
+        doc_id = crypto.randomBytes(4).toString('hex')
+        con.sadd "documara:user:#{user_id}:documents", doc_id, (err) ->
+          if err
+            return callback err, null
+          return callback null, doc_id
 
+    documents: (owner_login, callback) ->
+      callback = (() ->) unless callback?
+      @findUserIdFromLogin owner_login, (err, user_id) ->
+        if err
+          return callback err, null
+        unless user_id
+          return callback { error: 'unknown user' }, null
+        con.smembers "documara:user:#{user_id}:documents", (err, docs) ->
+          if err
+            return callback err, null
+          return callback null, docs
 
     findUserIdFromLogin: (login, callback) ->
       callback = (() ->) unless callback?

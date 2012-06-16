@@ -19,6 +19,7 @@
 </section>
 
 <section id="document-show">
+  <a href="/">&lt;&lt;all documents</a>
     <h1>Document Title</h1>
     <textarea id="editor" disabled="disabled">connecting...</textarea>
 </section>
@@ -28,6 +29,9 @@
   <h1>Your documents</h1>
   <ul id="documents">
   </ul>
+  <form action="/documents/" method="POST">
+    <input type="submit" value="New Document"></input>
+  </form>
 </section>
 
 <script src="/channel/bcsocket.js"></script>
