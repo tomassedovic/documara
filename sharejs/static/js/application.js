@@ -17,8 +17,14 @@ $('#login-page form').live('submit', function() {
 
 function document_id() {
   /* Get the database ID of the list. */
-  var regex = /^\/documents\/([-a-zA-Z0-9]+)/
-  return regex.exec(document.location.pathname)[1]
+  var regex = /^\/documents\/([-a-zA-Z0-9]+)/;
+  var matches = regex.exec(document.location.pathname);
+  console.log(matches);
+  if(matches && matches.length === 2) {
+    return matches[1];
+  } else {
+    return null;
+  }
 }
 
 function openDocument() {
@@ -26,8 +32,7 @@ function openDocument() {
     if(err) {
       console.log("Error connecting ShareJS:", err);
       if(err === 'forbidden') {
-        $('#login-page').show();
-        $('#document-page').hide();
+        showPage('login');
       }
     } else {
       var $editor = $('#editor');
@@ -36,13 +41,33 @@ function openDocument() {
       // ShareJS doesn't support jQuery objects, we must use the native DOM
       // representation for $editor
       doc.attach_textarea($editor[0]);
-      $('#login-page').hide();
-      $('#document-page').show();
+      showPage('document-show');
     }
   });
 }
 
 
+
+function showPage(id) {
+  $('section').hide();
+  console.log('section #' + id);
+  $('section#' + id).show();
+}
+
+
 $(document).ready(function() {
+  if(!document_id()) {
+    showPage('document-index');
+    $.getJSON('/api/documents/', function(docs) {
+      var $documents = $('#documents');
+      jQuery.each(docs, function(index, doc_id) {
+        var $li = $('<li />');
+        var $a = $('<a href="/documents/'+ doc_id + '">' + doc_id + '</a>');
+        $li.append($a);
+        $documents.append($li);
+      });
+    });
+    return;
+  }
   openDocument();
-})
+});

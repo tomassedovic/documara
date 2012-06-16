@@ -20,12 +20,6 @@ server.use connect.logger()
 server.use connect.cookieParser()
 server.use connect.session(sessionConfig)
 server.use connect.bodyParser()
-
-
-server.get '/', (req, res) ->
-  res.redirect '/documents/'
-
-# If this is before the 'GET /' route, it will override it
 server.use connect.static("#{__dirname}/static")
 
 
@@ -55,14 +49,8 @@ server.get '/documents/:id', (req, res) ->
   res.sendfile __dirname + '/static/index.html'
 
 
-server.get '/documents/', (req, res) ->
-  return redis.keys 'ShareJS:doc:*', (err, keys) ->
-    if err
-      return res.send 'database error', 500
-    doc_keys = u_.map keys, (k) ->
-      doc_id = k.slice 12
-      "<a href=\"/documents/#{doc_id}\">#{doc_id}</a><br />"
-    return res.send doc_keys.join('\n'), 200
+server.get '/api/documents/', (req, res) ->
+  sendJSON res, ['todo', 'thingy'], 200
 
 
 sendJSON = (res, data, code) ->

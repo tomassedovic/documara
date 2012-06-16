@@ -9,7 +9,7 @@
   <input type="submit" value="Logout"></input>
 </form>
 
-<section id="login-page">
+<section id="login">
     <form action="/login" method="post">
         <div class="alert" style="display: none; color: red">Invalid email or password.</div>
         <input type="text" name="email" id="email" placeholder="Email"></input>
@@ -18,11 +18,17 @@
     </form>
 </section>
 
-<section id="document-page">
-    <h1>Hello World!</h1>
+<section id="document-show">
+    <h1>Document Title</h1>
     <textarea id="editor" disabled="disabled">connecting...</textarea>
 </section>
 
+
+<section id="document-index">
+  <h1>Your documents</h1>
+  <ul id="documents">
+  </ul>
+</section>
 
 <script src="/channel/bcsocket.js"></script>
 <script src="/share/share.js"></script>
