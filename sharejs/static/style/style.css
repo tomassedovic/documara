@@ -1,9 +1,17 @@
-textarea {
+#title {
   position: absolute;
-  left: 1em;
-  right: 1em;
-  top: 8em;
-  bottom: 3em;
+  left: 10px;
+  right: 10px;
+  top: 70px;
+  font-size: 18px;
+}
+
+#editor {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 100px;
+  bottom: 20px;
 }
 
 #document-page, #login-page {
