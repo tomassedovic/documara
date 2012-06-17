@@ -80,6 +80,10 @@ function setupUI() {
           var $a = $('<a href="/documents/'+ doc_id + '">' + doc_id + '</a>');
           $li.append($a);
           $documents.append($li);
+          jQuery.get('/doc/' + doc_id, function(doc) {
+            var $a = $('a[href="/documents/' + doc_id + '"]');
+            $a.text(doc.title);
+          });
         });
       },
       statusCode: {
