@@ -90,11 +90,19 @@ isLoggedIn = (session) ->
   session and session.user and session.user.email
 
 authenticateSharejs = (agent, action) ->
-  session = getSession agent.headers, (session) ->
-    if isLoggedIn(session)
-      action.accept()
+  getSession agent.headers, (session) ->
+    if not isLoggedIn(session)
+      return action.reject()
+    else if action.type is 'connect'
+      return action.accept()
     else
-      action.reject()
+      db.documents session.user.email, (err, docs) ->
+        if err
+          return action.reject()
+        if action.docName in docs
+          return action.accept()
+        else
+          return action.reject()
 
 
 sharejsOptions =
