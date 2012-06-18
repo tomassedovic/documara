@@ -51,17 +51,37 @@ function openDocument() {
       $editor.attr('disabled', false);
       if(!doc.get()) {
         // This is a newly-created document. Initialize it:
-        doc.set({body: '', title: ''});
+        var now = (new XDate(true)).toISOString();
+        doc.set({body: '', title: '', created: now, last_modified: now});
       }
-      var subdoc = doc.at('body');
       // ShareJS doesn't support jQuery objects, we must use the native DOM
       // representation for $editor
-      subdoc.attach_textarea($editor[0]);
-      attach_textbox(doc.at('title'), $('#title'));
+      doc.at('body').attach_textarea($editor[0]);
+      var $title = $('#title');
+      attach_textbox(doc.at('title'), $title);
+      attachLastModified($editor, $title, doc.at('last_modified'));
       showPage('document-show');
     }
   });
 }
+
+function attachLastModified($editor, $title, doc) {
+  var last_checked_version = {};
+  last_checked_version.body = $editor.val();
+  last_checked_version.title = $title.val();
+  var timeout = 10 * 1000;
+  setTimeout(function() {
+    if(last_checked_version.body !== $editor.val() ||
+       last_checked_version.title !== $title.val()) {
+      last_checked_version.body = $editor.val();
+      last_checked_version.title = $title.val();
+      var now = (new XDate).toISOString();
+      doc.set(now);
+    }
+    setTimeout(arguments.callee, timeout);
+  }, timeout);
+}
+
 
 function showPage(id) {
   $('section').hide();
