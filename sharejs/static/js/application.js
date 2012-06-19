@@ -1,3 +1,5 @@
+var renderDocumentListItem = Mustache.compile($('#list-item-template').text());
+
 $('#login form').live('submit', function() {
   var $form = $(this);
   var params = $form.serialize();
@@ -96,13 +98,14 @@ function setupUI() {
       success: function(docs) {
         var $documents = $('#documents');
         jQuery.each(docs, function(index, doc_id) {
-          var $li = $('<li />');
-          var $a = $('<a href="/documents/'+ doc_id + '">' + doc_id + '</a>');
-          $li.append($a);
+          var doc = {id: doc_id, title: doc_id };
+          var $li = $(renderDocumentListItem(doc));
           $documents.append($li);
           jQuery.get('/doc/' + doc_id, function(doc) {
-            var $a = $('a[href="/documents/' + doc_id + '"]');
-            $a.text(doc.title);
+            doc.id = doc_id;
+            doc.human_time = (new XDate(doc.last_modified)).toLocaleDateString();
+            var $li = $('a[href="/documents/' + doc_id + '"]').parent('li');
+            $li.html(renderDocumentListItem(doc));
           });
         });
       },

@@ -34,6 +34,15 @@
   </form>
 </section>
 
+<script id="list-item-template" type="js-template">
+<li>
+  <a href="/documents/{{ id }}">
+    <h3>{{ title }}</h3>
+    <time datetime="{{ last_modified }}">{{ human_time }}</time>
+  </a>
+</li>
+</script>
+
 <script src="/channel/bcsocket.js"></script>
 <script src="/share/share.js"></script>
 <script src="/share/json.js"></script>
