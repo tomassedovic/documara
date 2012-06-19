@@ -99,7 +99,8 @@ function setupUI() {
         var $documents = $('#documents');
         jQuery.each(docs, function(index, doc_id) {
           var doc = {id: doc_id, title: doc_id };
-          var $li = $(renderDocumentListItem(doc));
+          var $li = $('<li />');
+          $li.html($(renderDocumentListItem(doc)));
           $documents.append($li);
           jQuery.get('/doc/' + doc_id, function(doc) {
             doc.id = doc_id;
