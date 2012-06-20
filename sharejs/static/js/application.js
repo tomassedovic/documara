@@ -104,7 +104,7 @@ function setupUI() {
           $documents.append($li);
           jQuery.get('/doc/' + doc_id, function(doc) {
             doc.id = doc_id;
-            doc.human_time = (new XDate(doc.last_modified)).toLocaleDateString();
+            doc.human_time = (new XDate(doc.created)).toLocaleDateString();
             var $li = $('a[href="/documents/' + doc_id + '"]').parent('li');
             $li.html(renderDocumentListItem(doc));
           });
