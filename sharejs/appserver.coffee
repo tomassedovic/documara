@@ -89,6 +89,18 @@ getSession = (headers, callback) ->
 isLoggedIn = (session) ->
   session and session.user and session.user.email
 
+
+throttledReindex = {}
+
+documentChanged = (action, login, doc_id) ->
+  console.log("document changed: #{doc_id}, action: #{action}")
+  unless doc_id of throttledReindex
+    reindexDoc = () ->
+      console.log "rebuilding index for document: #{doc_id}"
+      db.updateIndex(login, doc_id)
+    throttledReindex[doc_id] = u_.throttle reindexDoc, (60 * 1000)
+  throttledReindex[doc_id]()
+
 authenticateSharejs = (agent, action) ->
   getSession agent.headers, (session) ->
     if not isLoggedIn(session)
@@ -100,7 +112,10 @@ authenticateSharejs = (agent, action) ->
         if err
           return action.reject()
         if action.docName in docs
-          return action.accept()
+          action.accept()
+          if action.type in ['create', 'update', 'delete']
+            documentChanged(action.type, session.user.email, action.docName)
+          return
         else
           return action.reject()
 

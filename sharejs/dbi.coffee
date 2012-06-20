@@ -1,6 +1,7 @@
 redis = require('redis').createClient();
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
+u_ = require 'underscore'
 
 dbi = (con) ->
   result =
@@ -74,6 +75,29 @@ dbi = (con) ->
           if err
             return callback err, null
           return callback null, docs
+
+
+    updateIndex: (owner_login, doc_id, callback) ->
+      callback = (() ->) unless callback?
+      @findUserIdFromLogin owner_login, (err, user_id) =>
+        if err
+          return callback err, null
+        index_key = "documara:user:#{user_id}:documents_by_last_modified"
+        @updateDocumentIndexScore index_key, doc_id, callback
+
+
+    updateDocumentIndexScore: (index_key, doc_id, callback) ->
+      callback = (() ->) unless callback?
+      con.lrange "ShareJS:ops:#{doc_id}", -1, -1, (err, ops) ->
+        if err
+          return callback err, null
+        if u_.isEmpty ops
+          return callback 'ops are empty', null
+        last_op = JSON.parse(ops[0])
+        timestamp = last_op.meta.ts
+        con.zadd index_key, timestamp, doc_id, (err) ->
+          return callback err, true
+
 
     findUserIdFromLogin: (login, callback) ->
       callback = (() ->) unless callback?
