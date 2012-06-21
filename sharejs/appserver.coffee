@@ -82,6 +82,8 @@ server.get '/api/documents/', (req, res) ->
 
 sendJSON = (res, data, code) ->
   res.header 'Content-Type', 'application/json; charset=utf-8'
+  res.header 'Cache-Control', 'no-cache, no-store, max-age=0'
+  res.header 'Expires', 'Mon, 01 Jan 1990 00:00:00 GMT'
   res.charset = 'utf-8'
   res.send JSON.stringify(data) + '\n', code
 
