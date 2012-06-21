@@ -2,6 +2,7 @@ redis = require('redis').createClient();
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
 u_ = require 'underscore'
+XDate = require 'xdate'
 
 dbi = (con) ->
   result =
@@ -59,7 +60,9 @@ dbi = (con) ->
         unless user_id
           return callback { error: 'unknown user' }, null
         doc_id = crypto.randomBytes(4).toString('hex')
-        con.sadd "documara:user:#{user_id}:documents", doc_id, (err) ->
+        index_key = "documara:user:#{user_id}:documents_by_last_modified"
+        timestamp = (new XDate(true)).getTime()
+        con.zadd index_key, timestamp, doc_id, (err) ->
           if err
             return callback err, null
           return callback null, doc_id

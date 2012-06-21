@@ -115,5 +115,6 @@ function setupUI() {
 
 
 $(document).ready(function() {
+  jQuery.ajaxSetup({ cache: false });
   setupUI();
 });
