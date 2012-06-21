@@ -64,6 +64,14 @@ dbi = (con) ->
             return callback err, null
           return callback null, doc_id
 
+    getDocument: (doc_id, callback) ->
+      callback = (() ->) unless callback?
+      con.get "ShareJS:doc:#{doc_id}", (err, json) ->
+        if err
+          return callback err, null
+        sharejs_doc = JSON.parse(json)
+        return callback null, sharejs_doc.snapshot
+
     documents: (owner_login, callback) ->
       callback = (() ->) unless callback?
       @findUserIdFromLogin owner_login, (err, user_id) ->
@@ -71,7 +79,8 @@ dbi = (con) ->
           return callback err, null
         unless user_id
           return callback { error: 'unknown user' }, null
-        con.smembers "documara:user:#{user_id}:documents", (err, docs) ->
+        index_key = "documara:user:#{user_id}:documents_by_last_modified"
+        con.zrevrange index_key, 0, -1, (err, docs) ->
           if err
             return callback err, null
           return callback null, docs

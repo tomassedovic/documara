@@ -6,6 +6,7 @@ url = require('url')
 RedisSessionStore = require('connect-redis')(connect)
 redis = require('redis').createClient()
 u_ = require('underscore')
+async = require('async')
 db = require('./dbi').connect()
 
 
@@ -64,7 +65,17 @@ server.get '/api/documents/', (req, res) ->
     db.documents req.session.user.email, (err, docs) ->
       if err
         return sendJSON res, { error: err }, 500
-      return sendJSON res, docs, 200
+      async.map docs
+      , (doc_id, callback) ->
+        db.getDocument doc_id, (err, doc) ->
+          doc ||= {}
+          result = u_.pick(doc, 'title', 'created', 'last_modified')
+          result.id = doc_id
+          return callback err, result
+      , (err, result) ->
+        if err
+          return sendJSON res, { error: err }, 500
+        return sendJSON res, result, 200
   else
     return sendJSON res, { error: 'not logged in'}, 401
 
