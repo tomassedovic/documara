@@ -85,6 +85,52 @@ function attachLastModified($editor, $title, doc) {
 }
 
 
+
+
+function match(pattern, text) {
+  var normalized = function(text) {
+    return accent_fold(text.toLowerCase());
+  };
+  return normalized(text).indexOf(normalized(pattern)) >= 0;
+}
+
+$('#searchbox').live('focusin', function(e) {
+  /* For some reason the text isn't selected when pressing the Up key
+   * from the list unless the timeout is here.
+   */
+  setTimeout(function() { $('#searchbox').select(); }, 10);
+});
+
+$('#searchbox').live('keyup', function(e) {
+  if(e.which == 40) {
+    e.preventDefault();
+    $('#documents li:visible:first a').addClass('focus', true).focus();
+  }
+
+  var pattern = $('#searchbox').val();
+  var filter = function(index, element) {
+    var $e = $(element);
+    $e.toggle(match(pattern, $e.find('a h3').text()));
+  };
+  _.defer(function() { $('#documents li').each(filter); });
+});
+
+$('#documents li a').live('keydown', function(e) {
+  if(e.which == 40) {
+    e.preventDefault();
+    var $next = $(this).parent().nextAll(':visible').first().find('a');
+    $next.focus();
+  }
+  if(e.which == 38) {
+    e.preventDefault();
+    var $prev = $(this).parent().prevAll(':visible').first().find('a');
+    if($prev.length == 0) $prev = $('#searchbox');
+    $prev.focus();
+  }
+});
+
+
+
 function showPage(id) {
   $('section').hide();
   console.log('section #' + id);
