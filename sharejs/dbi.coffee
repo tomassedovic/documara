@@ -67,6 +67,21 @@ dbi = (con) ->
             return callback err, null
           return callback null, doc_id
 
+    userHasDocument: (owner_login, doc_id, callback) ->
+      callback = (() ->) unless callback?
+      @findUserIdFromLogin owner_login, (err, user_id) ->
+        if err
+          return callback err, null
+        unless user_id
+          return callback { error: 'unknown user' }, null
+        index_key = "documara:user:#{user_id}:documents_by_last_modified"
+        con.zscore index_key, doc_id, (err, score) ->
+          console.log err, score
+          if err
+            return callback err, null
+          return callback null, score?
+
+
     getDocument: (doc_id, callback) ->
       callback = (() ->) unless callback?
       con.get "ShareJS:doc:#{doc_id}", (err, json) ->

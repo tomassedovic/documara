@@ -116,19 +116,16 @@ authenticateSharejs = (agent, action) ->
   getSession agent.headers, (session) ->
     if not isLoggedIn(session)
       return action.reject()
-    else if action.type is 'connect'
+    if action.type is 'connect'
       return action.accept()
-    else
-      db.documents session.user.email, (err, docs) ->
-        if err
-          return action.reject()
-        if action.docName in docs
-          action.accept()
-          if action.type in ['create', 'update', 'delete']
-            documentChanged(action.type, session.user.email, action.docName)
-          return
-        else
-          return action.reject()
+
+    db.userHasDocument session.user.email, action.docName, (err, exists) ->
+      if err
+        return action.reject()
+      unless exists
+        return action.reject()
+      action.accept()
+      documentChanged(action.type, session.user.email, action.docName)
 
 
 sharejsOptions =
