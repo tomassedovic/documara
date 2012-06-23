@@ -67,8 +67,8 @@ server.get '/api/documents/', (req, res) ->
         return sendJSON res, { error: err }, 500
       async.map docs
       , (doc_id, callback) ->
-        db.getDocument doc_id, (err, doc) ->
-          doc ||= {}
+        server.model.getSnapshot doc_id, (err, doc) ->
+          doc = (doc?.snapshot || {})
           result = u_.pick(doc, 'title', 'created', 'last_modified')
           result.id = doc_id
           return callback err, result

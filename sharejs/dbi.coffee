@@ -84,6 +84,8 @@ dbi = (con) ->
 
     getDocument: (doc_id, callback) ->
       callback = (() ->) unless callback?
+      # TODO: snapshots don't get updated immediately on every new op, using the
+      # ShareJS API would be more reliable.
       con.get "ShareJS:doc:#{doc_id}", (err, json) ->
         if err
           return callback err, null
