@@ -51,11 +51,6 @@ function openDocument() {
     } else {
       var $editor = $('#editor');
       $editor.attr('disabled', false);
-      if(!doc.get()) {
-        // This is a newly-created document. Initialize it:
-        var now = (new XDate(true)).toISOString();
-        doc.set({body: '', title: '', created: now, last_modified: now});
-      }
       // ShareJS doesn't support jQuery objects, we must use the native DOM
       // representation for $editor
       doc.at('body').attach_textarea($editor[0]);

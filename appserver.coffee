@@ -7,7 +7,7 @@ RedisSessionStore = require('connect-redis')(connect)
 redis = require('redis').createClient()
 u_ = require('underscore')
 async = require('async')
-db = require('./dbi').connect()
+dbi = require('./dbi')
 
 
 sessionConfig =
@@ -52,7 +52,10 @@ server.get '/documents/:id', (req, res) ->
 
 server.post '/documents/', (req, res) ->
   if isLoggedIn(req.session)
-    db.createDocument req.session.user.email, {}, (err, doc_id) ->
+    doc =
+      body: ''
+      title: ''
+    db.createDocument req.session.user.email, doc, (err, doc_id) ->
       if err
         return sendJSON res, { error: err }, 500
       res.redirect "/documents/#{doc_id}"
@@ -127,7 +130,8 @@ authenticateSharejs = (agent, action) ->
       unless exists
         return action.reject()
       action.accept()
-      documentChanged(action.type, session.user.email, action.docName)
+      if action.type in ['create', 'update', 'delete']
+        documentChanged(action.type, session.user.email, action.docName)
 
 
 sharejsOptions =
@@ -136,7 +140,7 @@ sharejsOptions =
   auth: authenticateSharejs
 
 sharejs.attach server, sharejsOptions
-
+db = dbi.connect server.model
 
 PORT = process.argv[2] or 8080
 server.listen PORT

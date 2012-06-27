@@ -3,8 +3,14 @@ crypto = require 'crypto'
 bcrypt = require 'bcrypt'
 u_ = require 'underscore'
 XDate = require 'xdate'
+async = require 'async'
 
-dbi = (con) ->
+
+format_date = (s) ->
+  (new XDate(s)).toUTCString("yyyy-MM-dd'T'HH:mm:ss.fffzzz")
+
+
+dbi = (con, model) ->
   result =
 
     createUser: (login, password, callback) ->
@@ -61,11 +67,23 @@ dbi = (con) ->
           return callback { error: 'unknown user' }, null
         doc_id = crypto.randomBytes(4).toString('hex')
         index_key = "documara:user:#{user_id}:documents_by_last_modified"
-        timestamp = (new XDate(true)).getTime()
-        con.zadd index_key, timestamp, doc_id, (err) ->
-          if err
-            return callback err, null
-          return callback null, doc_id
+        current_time = (new XDate(true))
+        if u_.isEmpty doc
+          doc = {}
+        unless doc.created
+          doc.created = format_date(current_time)
+        unless doc.last_modified
+          doc.last_modified = doc.created
+        timestamp = (new XDate(doc.last_modified)).getTime()
+        async.series [
+          (cb) ->
+            model.create doc_id, 'json', cb
+          (cb) ->
+            model.applyOp doc_id, {op: [{p: [], oi: doc}], v: 0}, cb
+          (cb) ->
+            con.zadd index_key, timestamp, doc_id, cb
+        ], (err, results) ->
+          return callback err, doc_id
 
     userHasDocument: (owner_login, doc_id, callback) ->
       callback = (() ->) unless callback?
@@ -139,6 +157,12 @@ dbi = (con) ->
 
   return result
 
+isShareJSModel = (model) ->
+  required_functions = ['create', 'applyOp', 'getSnapshot']
+  model and u_.all(required_functions, (f) -> f of model)
 
-exports.connect = () ->
-  return dbi(redis)
+
+exports.connect = (model) ->
+  unless isShareJSModel(model)
+    throw new Error('You must specify a ShareJS model object.')
+  return dbi(redis, model)
