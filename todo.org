@@ -6,6 +6,16 @@
 ** ugly user-info area on the document-index page
 *** the "Logout" button should look like a link
 ** missing user-info area on the document-index page
+** speed up the document-index loading time
+   If the client supports localStorage, we can use it to store the list of
+   documents and just load the new stuff.
+
+   The client already keeps track of the timestamp of the last modification of
+   any document (the first one in the list). We can add a `since=timestamp`
+   query parameter to the /api/documents/ call and return just docs modified
+   after that.
+
+   Redis' command `ZRANGEBYSCORE` allows us to do that for the sorted sets.
 ** it should be able to add a new document using the "Search docs" textbox
     when the user types something to the box, we'll insert a "Create new
     document" entry into the documents index and highlight it.
