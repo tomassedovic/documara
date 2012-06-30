@@ -32,22 +32,6 @@
    the items as long as we're within the <ul> element.
 ** Search box misaligned with the Documents box on the index page
 ** the user-info area should show the user's name/email
-** DBI should use the ShareJS API rather than reading the database directly
-   This is of course for the ShareJS data. Their database implementation can
-   change at any time. Additionally, the document snapshots in the DB get
-   outdated but the API calls provide fresh data.
-** The sorting of documents should be updated immediately on first change
-   Right now when we open a document, make a quick change and close it, it won't
-   show up on top of the documents listing immediately.
-
-   The reason for this that we call for the reindex before the newest operation
-   was stored in the database. It may get solved for free by not reading the
-   ShareJS DB directly.
-
-   If not, we should either set the timestamp manually on the first received
-   operation (and only subsequently read the actual snapshot data to get the
-   precise timestamp) or hook the reindexing to a "document updated" rather than
-   "op received" event.
 ** Allow document deletion
 ** Change the colour theme
    The background and foreground colours were taken from notepad.cc because it

@@ -102,12 +102,9 @@ dbi = (con, model) ->
 
     getDocument: (doc_id, callback) ->
       callback = (() ->) unless callback?
-      # TODO: snapshots don't get updated immediately on every new op, using the
-      # ShareJS API would be more reliable.
-      con.get "ShareJS:doc:#{doc_id}", (err, json) ->
+      model.getSnapshot doc_id, (err, snapshot) ->
         if err
           return callback err, null
-        sharejs_doc = JSON.parse(json)
         return callback null, sharejs_doc.snapshot
 
     documents: (owner_login, callback) ->
@@ -126,24 +123,34 @@ dbi = (con, model) ->
 
     updateIndex: (owner_login, doc_id, callback) ->
       callback = (() ->) unless callback?
-      @findUserIdFromLogin owner_login, (err, user_id) =>
-        if err
-          return callback err, null
-        index_key = "documara:user:#{user_id}:documents_by_last_modified"
-        @updateDocumentIndexScore index_key, doc_id, callback
-
+      async.waterfall [
+        (cb) =>
+          @findUserIdFromLogin owner_login, (err, user_id) ->
+            if err
+              return cb err, null
+            index_key = "documara:user:#{user_id}:documents_by_last_modified"
+            cb null, index_key, doc_id
+        @updateDocumentIndexScore
+      ], (err, result) ->
+        return callback err, result
 
     updateDocumentIndexScore: (index_key, doc_id, callback) ->
       callback = (() ->) unless callback?
-      con.lrange "ShareJS:ops:#{doc_id}", -1, -1, (err, ops) ->
-        if err
-          return callback err, null
-        if u_.isEmpty ops
-          return callback 'ops are empty', null
-        last_op = JSON.parse(ops[0])
-        timestamp = last_op.meta.ts
-        con.zadd index_key, timestamp, doc_id, (err) ->
-          return callback err, true
+      async.waterfall [
+        (cb) ->
+          model.getVersion doc_id, cb
+        (version, cb) ->
+          unless version and version > 0
+            return cb 'Version is zero, no need to update', null
+          model.getOps doc_id, version - 1, null, cb
+        (ops, cb) ->
+          if u_.isEmpty ops
+            return cb 'did not receive any snapshots', null
+          last_op = u_.last ops
+          timestamp = last_op.meta.ts
+          con.zadd index_key, timestamp, doc_id, cb
+      ], (err, result) ->
+        return callback err, true
 
 
     findUserIdFromLogin: (login, callback) ->
