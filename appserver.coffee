@@ -38,7 +38,7 @@ server.post '/login', (req, res) ->
       sendJSON res, req.session.user, 200
     else
       req.session.user = {}
-      sendJSON res, 403, {"error": "invalid email or password"}
+      sendJSON res, {"error": "invalid email or password"}, 401
 
 
 server.post '/logout', (req, res) ->
