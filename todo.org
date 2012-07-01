@@ -1,5 +1,4 @@
 * Features & Issues
-** search box should have focus when the document-index page loads
 ** ugly "new document" button the document-index page
 ** ugly user-info area on the document-index page
 *** the "Logout" button should look like a link

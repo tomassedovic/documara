@@ -144,6 +144,7 @@ function setupUI() {
           $li.html($(renderDocumentListItem(doc)));
           $documents.append($li);
         });
+        $('#searchbox').select();
       },
       statusCode: {
         401: function() { showPage('login'); }
