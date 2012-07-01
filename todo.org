@@ -1,5 +1,4 @@
 * Features & Issues
-** ugly login page
 ** no message on invalid email/password while trying to log in
 ** search box should have focus when the document-index page loads
 ** ugly "new document" button the document-index page
