@@ -1,18 +1,5 @@
 * Features & Issues
-** ugly "new document" button the document-index page
-** ugly user-info area on the document-index page
-*** the "Logout" button should look like a link
-** missing user-info area on the document-index page
-** speed up the document-index loading time
-   If the client supports localStorage, we can use it to store the list of
-   documents and just load the new stuff.
-
-   The client already keeps track of the timestamp of the last modification of
-   any document (the first one in the list). We can add a `since=timestamp`
-   query parameter to the /api/documents/ call and return just docs modified
-   after that.
-
-   Redis' command `ZRANGEBYSCORE` allows us to do that for the sorted sets.
+** missing user-info area on the document-show page
 ** it should be able to add a new document using the "Search docs" textbox
     when the user types something to the box, we'll insert a "Create new
     document" entry into the documents index and highlight it.
@@ -29,7 +16,17 @@
    the items as long as we're within the <ul> element.
 ** Search box misaligned with the Documents box on the index page
 ** the user-info area should show the user's name/email
-** Allow document deletion
+** speed up the document-index loading time
+   If the client supports localStorage, we can use it to store the list of
+   documents and just load the new stuff.
+
+   The client already keeps track of the timestamp of the last modification of
+   any document (the first one in the list). We can add a `since=timestamp`
+   query parameter to the /api/documents/ call and return just docs modified
+   after that.
+
+   Redis' command `ZRANGEBYSCORE` allows us to do that for the sorted sets.
+p** Allow document deletion
 ** Change the colour theme
    The background and foreground colours were taken from notepad.cc because it
    was quick and I wanted something that looks good for my prototyping and
