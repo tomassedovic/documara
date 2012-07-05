@@ -45,7 +45,9 @@ openDocument = ->
       $title = $("#title")
       attachTextbox doc.at("title"), $title
       attachLastModified $editor, $title, doc.at("last_modified")
+      $('#publish').live 'click', publishCallback(doc)
       showPage "document-show"
+      renderFooter(doc.snapshot)
 
 
 # Matches text to a given pattern ignoring case and character accents
@@ -77,13 +79,10 @@ setupUI = ->
           doc.human_time = (new XDate(doc.created)).toLocaleDateString()
           $li.html $(renderDocumentListItem(doc))
           $documents.append $li
-
         $("#searchbox").select()
-
       statusCode:
         401: ->
           showPage "login"
-
     return
   openDocument()
 
@@ -97,16 +96,12 @@ $("#login form").live "submit", ->
     data: params
     success: ->
       setupUI()
-
     error: ->
       $form.find(".alert").show()
-
-  false
+  return false
 
 $("#searchbox").live "focusin", (e) ->
-  setTimeout (->
-    $("#searchbox").select()
-  ), 10
+  setTimeout (-> $("#searchbox").select()), 10
 
 $("#searchbox").live "keyup", (e) ->
   if e.which is 40
@@ -136,6 +131,52 @@ $("#documents li a").live "focusin", (e) ->
 
 $("#documents li a").live "focusout", (e) ->
   $(this).removeClass "selected"
+
+$('#set-current-time').live 'click', () ->
+  $('#published-date').val (new XDate).toString('d MMMM yyyy')
+
+# Parse the date given in format "24 March 2012" (local time) and return a UTC
+# XDate object
+parseHumanDate = (s) ->
+  months = XDate.locales[''].monthNames
+  parts = _.compact s.split ' '
+
+  year = parseInt(parts[2])
+  day = parseInt(parts[0])
+  unless $.isNumeric(year) and $.isNumeric(day)
+    return null
+  month = _.indexOf months, parts[1]
+  unless _.all([year, day, month], (n) -> n >= 0)
+    return null
+  result = XDate(year, month, day, 0, 0, 0, 1, true)
+  unless result.valid()
+    return null
+  return result
+
+publishCallback = (doc) ->
+  return ->
+    published = parseHumanDate $('#published-date').val()
+    slug = _.compact($('#slug').val().trim().split(' ')).join('-')
+    unless published and slug
+      return alert 'enter correct slug and date'
+    doc.setAt ['published'], published.toISOString()
+    doc.setAt ['slug'], slug
+    renderFooter(doc.snapshot)
+
+
+renderFooter = (snapshot) ->
+  $form = $('#publish-form')
+  $info = $('#publication-info')
+  if snapshot.published and snapshot.slug
+    $form.hide()
+    $info.show()
+    date = (new XDate(snapshot.published))
+    $info.find('a').attr('href', "/public/#{date.toString('yyyy-MM-dd')}/#{snapshot.slug}")
+    $info.find('time').text(date.toLocaleDateString())
+  else
+    $info.hide()
+    $form.show()
+
 
 $(document).ready ->
   jQuery.ajaxSetup cache: false
