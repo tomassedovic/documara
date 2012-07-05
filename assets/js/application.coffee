@@ -38,16 +38,17 @@ openDocument = ->
     if err
       console.log "Error connecting ShareJS:", err
       showPage "login"  if err is "forbidden"
-    else
-      $editor = $("#editor")
-      $editor.attr "disabled", false
-      doc.at("body").attach_textarea $editor[0]
-      $title = $("#title")
-      attachTextbox doc.at("title"), $title
-      attachLastModified $editor, $title, doc.at("last_modified")
-      $('#publish').live 'click', publishCallback(doc)
-      showPage "document-show"
-      renderFooter(doc.snapshot)
+      return
+
+    $editor = $("#editor")
+    $editor.attr "disabled", false
+    doc.at("body").attach_textarea $editor[0]
+    $title = $("#title")
+    attachTextbox doc.at("title"), $title
+    attachLastModified $editor, $title, doc.at("last_modified")
+    $('#publish').live 'click', publishCallback(doc)
+    showPage "document-show"
+    renderFooter(doc.snapshot)
 
 
 # Matches text to a given pattern ignoring case and character accents
@@ -111,7 +112,6 @@ $("#searchbox").live "keyup", (e) ->
   filter = (index, element) ->
     $e = $(element)
     $e.toggle matchTextDwim(pattern, $e.find("a h3").text())
-
   _.defer ->
     $("#documents li").each filter
 
@@ -152,6 +152,7 @@ parseHumanDate = (s) ->
   unless result.valid()
     return null
   return result
+
 
 publishCallback = (doc) ->
   return ->
