@@ -139,7 +139,13 @@ function showPage(id) {
   $('section').hide();
   console.log('showing page #' + id);
   $('section#' + id).show();
-  $('#user-info').toggle(id !== 'login');
+  $.getJSON('/login', function(data) {
+    var name = data && (data.name || data.email);
+    if(name) {
+      $('#user-info .username').text(name);
+      $('#user-info').show();
+    }
+  });
 }
 
 function setupUI() {
