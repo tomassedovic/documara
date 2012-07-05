@@ -7,13 +7,6 @@
 
     Pressing down arrow key would allow the user to navigate and select existing
     documents.
-** Dead mouse hover space between document items in the index page
-   When the user moves mouse in-between two document items, none is highlighted.
-
-   To satisfy mister Fitts, we should dedicate the space to the menu items as
-   well even if we keep the visuals as they are. There's no reason to deselect
-   the items as long as we're within the <ul> element.
-** Search box misaligned with the Documents box on the index page
 ** the user-info area should show the user's name/email
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
