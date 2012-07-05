@@ -7,15 +7,16 @@
 
 
 <section id="login">
-    <form action="/login" method="post">
-      <h2>Please log in</h2>
-        <div class="alert" style="display: none; color: red">Invalid email or password.</div>
-        <input type="text" name="email" id="email" placeholder="Email"></input>
-        <input type="password" name="password" id="password"
-        placeholder="Password"></input>
-        <input type="submit" name="submit" value="Log me in"></input>
-    </form>
+  <form action="/login" method="post">
+    <h2>Please log in</h2>
+    <div class="alert" style="display: none; color: red">Invalid email or password.</div>
+    <input type="text" name="email" id="email" placeholder="Email"></input>
+    <input type="password" name="password" id="password"
+           placeholder="Password"></input>
+    <input type="submit" name="submit" value="Log me in"></input>
+  </form>
 </section>
+
 
 <section id="document-show">
   <div id="title-wrapper">
@@ -37,7 +38,8 @@
   </div>
 
   <div id="searchbox-wrapper">
-  <input id="searchbox" type="text" name="searchbox" placeholder="Search the documents" />
+    <input id="searchbox" type="text" name="searchbox"
+           placeholder="Search the documents" />
   </div>
   <div id="documents-container">
     <ul id="documents">
@@ -51,6 +53,8 @@
   </div>
 </section>
 
+
+<!-- Templates -->
 <script id="list-item-template" type="js-template">
   <a href="/documents/{{ id }}">
     <h3>{{ title }}</h3>
