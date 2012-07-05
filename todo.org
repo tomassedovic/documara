@@ -1,8 +1,4 @@
 * Features & Issues
-** Firefox compatibility
-*** keyboard selection not very visible on document-index page
-    Regardless of the browser/OS focus cues, we should highlight the item same
-    way as we do when we hover over it with the mouse.
 ** it should be able to add a new document using the "Search docs" textbox
     when the user types something to the box, we'll insert a "Create new
     document" entry into the documents index and highlight it.

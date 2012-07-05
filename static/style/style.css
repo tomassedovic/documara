@@ -74,12 +74,14 @@ body {
   padding-right: 20px;
 }
 
-#documents-container li a:hover h3 {
+#documents-container li a:hover h3,
+#documents-container li a.selected h3 {
   text-decoration: underline;
   color: orange;
 }
 
-#documents-container li a:hover {
+#documents-container li a:hover,
+#documents-container li a.selected {
   background: black;
 }
 

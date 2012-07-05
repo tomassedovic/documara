@@ -124,6 +124,15 @@ $('#documents li a').live('keydown', function(e) {
   }
 });
 
+$('#documents li a').live('focusin', function(e) {
+  $(this).addClass('selected');
+});
+
+$('#documents li a').live('focusout', function(e) {
+  $(this).removeClass('selected');
+});
+
+
 
 
 function showPage(id) {
