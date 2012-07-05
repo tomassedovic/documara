@@ -7,6 +7,7 @@
     "express": "2.5.x",
     "share": "git://github.com/josephg/ShareJS.git",
     "connect": "2.3.x",
+    "connect-assets": "2.2.x",
     "redis": "0.7.x",
     "connect-redis": "1.3.x",
     "cookie": "0.0.x",

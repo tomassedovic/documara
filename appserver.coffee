@@ -2,6 +2,7 @@ connect = require('connect')
 express = require('express')
 sharejs = require('share').server
 cookie = require('cookie')
+assets = require('connect-assets')
 url = require('url')
 RedisSessionStore = require('connect-redis')(connect)
 redis = require('redis').createClient()
@@ -21,7 +22,11 @@ server.use connect.logger()
 server.use connect.cookieParser()
 server.use connect.session(sessionConfig)
 server.use connect.bodyParser()
+server.use assets()
 server.use connect.static("#{__dirname}/static")
+
+# Inform connect-assets that it should compile this coffeescript file
+js('application')
 
 
 server.get '/login', (req, res) ->
@@ -142,6 +147,7 @@ sharejsOptions =
 
 sharejs.attach server, sharejsOptions
 db = dbi.connect server.model
+
 
 PORT = process.argv[2] or 8080
 server.listen PORT
