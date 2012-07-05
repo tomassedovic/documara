@@ -7,8 +7,8 @@
 
 
 <section id="login">
-  <h2>Please log in</h2>
     <form action="/login" method="post">
+      <h2>Please log in</h2>
         <div class="alert" style="display: none; color: red">Invalid email or password.</div>
         <input type="text" name="email" id="email" placeholder="Email"></input>
         <input type="password" name="password" id="password"
@@ -18,21 +18,27 @@
 </section>
 
 <section id="document-show">
-  <input type="text" id="title" placeholder="Document title"></input>
-  <textarea id="editor" disabled="disabled">connecting...</textarea>
+  <div id="title-wrapper">
+    <input type="text" id="title" placeholder="Document title"></input>
+  </div>
+  <div id="editor-wrapper">
+    <textarea id="editor" disabled="disabled">connecting...</textarea>
+  </div>
   <a id="back-to-index" href="/">&lt;&lt;all documents</a>
 </section>
 
 
 <section id="document-index">
-<div id="user-info">
-  Hello, <span class="username">Anonymous</span>!
-  <form id="logout-form" action="/logout" method="POST">
-    <input type="submit" value="Logout"></input>
-  </form>
-</div>
+  <div id="user-info">
+    Hello, <span class="username">Anonymous</span>!
+    <form id="logout-form" action="/logout" method="POST">
+      <input type="submit" value="Logout"></input>
+    </form>
+  </div>
 
+  <div id="searchbox-wrapper">
   <input id="searchbox" type="text" name="searchbox" placeholder="Search the documents" />
+  </div>
   <div id="documents-container">
     <ul id="documents">
     </ul>
