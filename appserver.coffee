@@ -69,23 +69,24 @@ server.post '/documents/', (req, res) ->
 
 
 server.get '/api/documents/', (req, res) ->
-  if isLoggedIn(req.session)
-    db.documents req.session.user.email, (err, docs) ->
+  unless isLoggedIn(req.session)
+    return sendJSON res, { error: 'not logged in'}, 401
+
+  filter = {}
+  db.documents req.session.user.email, filter, (err, docs) ->
+    if err
+      return sendJSON res, { error: err }, 500
+    async.map docs
+    , (doc_id, callback) ->
+      server.model.getSnapshot doc_id, (err, doc) ->
+        doc = (doc?.snapshot || {})
+        result = u_.pick(doc, 'title', 'created', 'last_modified')
+        result.id = doc_id
+        return callback err, result
+    , (err, result) ->
       if err
         return sendJSON res, { error: err }, 500
-      async.map docs
-      , (doc_id, callback) ->
-        server.model.getSnapshot doc_id, (err, doc) ->
-          doc = (doc?.snapshot || {})
-          result = u_.pick(doc, 'title', 'created', 'last_modified')
-          result.id = doc_id
-          return callback err, result
-      , (err, result) ->
-        if err
-          return sendJSON res, { error: err }, 500
-        return sendJSON res, result, 200
-  else
-    return sendJSON res, { error: 'not logged in'}, 401
+      return sendJSON res, result, 200
 
 
 sendJSON = (res, data, code) ->

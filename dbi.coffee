@@ -10,6 +10,14 @@ format_date = (s) ->
   (new XDate(s)).toUTCString("yyyy-MM-dd'T'HH:mm:ss.fffzzz")
 
 
+by_created_index_key = (user_id) ->
+  "documara:user:#{user_id}:documents_by_created"
+by_modified_index_key = (user_id) ->
+  "documara:user:#{user_id}:documents_by_last_modified"
+by_published_index_key = (user_id) ->
+  "documara:user:#{user_id}:documents_by_published"
+
+
 dbi = (con, model) ->
   result =
 
@@ -66,7 +74,6 @@ dbi = (con, model) ->
         unless user_id
           return callback { error: 'unknown user' }, null
         doc_id = crypto.randomBytes(4).toString('hex')
-        index_key = "documara:user:#{user_id}:documents_by_last_modified"
         current_time = (new XDate(true))
         if u_.isEmpty doc
           doc = {}
@@ -74,14 +81,22 @@ dbi = (con, model) ->
           doc.created = format_date(current_time)
         unless doc.last_modified
           doc.last_modified = doc.created
-        timestamp = (new XDate(doc.last_modified)).getTime()
         async.series [
           (cb) ->
             model.create doc_id, 'json', cb
           (cb) ->
             model.applyOp doc_id, {op: [{p: [], oi: doc}], v: 0}, cb
           (cb) ->
-            con.zadd index_key, timestamp, doc_id, cb
+            timestamp = (new XDate(doc.last_modified)).getTime()
+            con.zadd by_modified_index_key(user_id), timestamp, doc_id, cb
+          (cb) ->
+            timestamp = (new XDate(doc.created)).getTime()
+            con.zadd by_created_index_key(user_id), timestamp, doc_id, cb
+          (cb) ->
+            unless doc.published
+              return cb()
+            timestamp = (new XDate(doc.published)).getTime()
+            con.zadd by_published_index_key(user_id), timestamp, doc_id, cb
         ], (err, results) ->
           return callback err, doc_id
 
@@ -92,8 +107,7 @@ dbi = (con, model) ->
           return callback err, null
         unless user_id
           return callback { error: 'unknown user' }, null
-        index_key = "documara:user:#{user_id}:documents_by_last_modified"
-        con.zscore index_key, doc_id, (err, score) ->
+        con.zscore by_modified_index_key(user_id), doc_id, (err, score) ->
           console.log err, score
           if err
             return callback err, null
@@ -107,15 +121,21 @@ dbi = (con, model) ->
           return callback err, null
         return callback null, sharejs_doc.snapshot
 
-    documents: (owner_login, callback) ->
+
+
+    # Filter values:
+    # created_since (int)  -- documents as old or newer than timestamp
+    # modified_since (int)  -- documents that were changed since timestamp
+    # published_since (int)  -- public documents that were published since timestamp
+    # limit (int) -- return at most that many documents
+    documents: (owner_login, filter, callback) ->
       callback = (() ->) unless callback?
       @findUserIdFromLogin owner_login, (err, user_id) ->
         if err
           return callback err, null
         unless user_id
           return callback { error: 'unknown user' }, null
-        index_key = "documara:user:#{user_id}:documents_by_last_modified"
-        con.zrevrange index_key, 0, -1, (err, docs) ->
+        con.zrevrange by_modified_index_key(user_id), 0, -1, (err, docs) ->
           if err
             return callback err, null
           return callback null, docs
@@ -128,28 +148,42 @@ dbi = (con, model) ->
           @findUserIdFromLogin owner_login, (err, user_id) ->
             if err
               return cb err, null
-            index_key = "documara:user:#{user_id}:documents_by_last_modified"
-            cb null, index_key, doc_id
+            cb null, user_id, doc_id
         @updateDocumentIndexScore
       ], (err, result) ->
         return callback err, result
 
-    updateDocumentIndexScore: (index_key, doc_id, callback) ->
+    updateDocumentIndexScore: (user_id, doc_id, callback) ->
       callback = (() ->) unless callback?
       async.waterfall [
         (cb) ->
           model.getVersion doc_id, cb
         (version, cb) ->
           unless version and version > 0
-            return cb 'Version is zero, no need to update', null
+            return cb 'abort'  # version is zero: no need to update
           model.getOps doc_id, version - 1, null, cb
         (ops, cb) ->
           if u_.isEmpty ops
-            return cb 'did not receive any snapshots', null
+            return cb 'did not receive any operations'
           last_op = u_.last ops
           timestamp = last_op.meta.ts
-          con.zadd index_key, timestamp, doc_id, cb
+          con.zadd by_modified_index_key(user_id), timestamp, doc_id, cb
+        (_, cb) ->
+          model.getSnapshot doc_id, cb
+        (doc, cb) ->
+          snapshot = doc.snapshot
+          unless snapshot
+            return cb 'received null snapshot'
+          unless snapshot.published and snapshot.slug
+            return cb 'abort'
+          pubdate = new XDate(snapshot.published)
+          unless pubdate.valid()
+            return cb 'invalid publication date'
+          timestamp = pubdate.getTime()
+          con.zadd by_published_index_key(user_id), timestamp, doc_id, cb
       ], (err, result) ->
+        if err and err isnt 'abort'
+          console.error 'updateDocumentIndexScore error:', err
         return callback err, true
 
 
