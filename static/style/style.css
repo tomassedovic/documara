@@ -128,7 +128,9 @@ body {
 
 #back-to-index {
   position: absolute;
-  bottom: 0;
+  top: 0;
+  left: 20px;
+  padding: 4px;
 }
 
 .message {
@@ -178,7 +180,7 @@ body {
 #user-info {
   position: absolute;
   top: 0;
-  right: 20px;
+  right: 40px;
   display: none;
 }
 
