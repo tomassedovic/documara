@@ -128,8 +128,9 @@ $('#documents li a').live('keydown', function(e) {
 
 function showPage(id) {
   $('section').hide();
-  console.log('section #' + id);
+  console.log('showing page #' + id);
   $('section#' + id).show();
+  $('#user-info').toggle(id !== 'login');
 }
 
 function setupUI() {
