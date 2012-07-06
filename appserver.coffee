@@ -121,7 +121,7 @@ documentChanged = (action, login, doc_id) ->
       console.log "rebuilding index for document: #{doc_id}"
       db.updateIndex login, doc_id, (err, success) ->
         console.log "index rebuild for #{doc_id} finished. error msg: #{err}"
-    throttledReindex[doc_id] = u_.throttle reindexDoc, (60 * 1000)
+    throttledReindex[doc_id] = u_.throttle reindexDoc, (2 * 1000)
   throttledReindex[doc_id]()
 
 authenticateSharejs = (agent, action) ->
