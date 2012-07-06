@@ -128,17 +128,52 @@ dbi = (con, model) ->
     # modified_since (int)  -- documents that were changed since timestamp
     # published_since (int)  -- public documents that were published since timestamp
     # limit (int) -- return at most that many documents
+    # The documents will be sorted by the modification date. The most recently
+    # modified first
     documents: (owner_login, filter, callback) ->
       callback = (() ->) unless callback?
-      @findUserIdFromLogin owner_login, (err, user_id) ->
-        if err
-          return callback err, null
-        unless user_id
-          return callback { error: 'unknown user' }, null
-        con.zrevrange by_modified_index_key(user_id), 0, -1, (err, docs) ->
-          if err
-            return callback err, null
-          return callback null, docs
+      async.waterfall [
+        (cb) =>
+          @findUserIdFromLogin owner_login, (err, user_id) ->
+            if err
+              return cb err
+            unless user_id
+              return cb { error: 'unknown user' }
+            return cb null, user_id
+        (user_id, cb) =>
+          @docsByCreated user_id, filter.created_since, (err, docs) ->
+            return cb err, user_id, docs
+        (user_id, docs_by_created, cb) =>
+          @docsByModified user_id, filter.modified_since, (err, docs) ->
+            return cb err, user_id, docs_by_created, docs
+        (user_id, docs_by_created, docs_by_modified, cb) =>
+          @docsByPublished user_id, filter.published_since, (err, docs) ->
+            return cb err, docs_by_created, docs_by_modified, docs
+        (docs_by_created, docs_by_modified, docs_by_published, cb) =>
+            return cb null, u_.intersection(docs_by_modified, docs_by_published,
+                                            docs_by_created)
+      ], (err, result) ->
+        console.log 'error', err
+        return callback err, result
+
+
+    docsByCreated: (user_id, timestamp, callback) ->
+      min = if timestamp then timestamp else '-inf'
+      key = by_created_index_key(user_id)
+      con.zrevrangebyscore key, '+inf', min, (err, docs) ->
+        return callback err, docs
+
+    docsByModified: (user_id, timestamp, callback) ->
+      min = if timestamp then timestamp else '-inf'
+      key = by_modified_index_key(user_id)
+      con.zrevrangebyscore key, '+inf', min, (err, docs) ->
+        return callback err, docs
+
+    docsByPublished: (user_id, timestamp, callback) ->
+      min = if timestamp then timestamp else '-inf'
+      key = by_published_index_key(user_id)
+      con.zrevrangebyscore key, '+inf', min, (err, docs) ->
+        return callback err, docs
 
 
     updateIndex: (owner_login, doc_id, callback) ->
@@ -160,11 +195,11 @@ dbi = (con, model) ->
           model.getVersion doc_id, cb
         (version, cb) ->
           unless version and version > 0
-            return cb 'abort'  # version is zero: no need to update
+            return cb null, []  # version is zero: no need to update
           model.getOps doc_id, version - 1, null, cb
         (ops, cb) ->
           if u_.isEmpty ops
-            return cb 'did not receive any operations'
+            return cb null
           last_op = u_.last ops
           timestamp = last_op.meta.ts
           con.zadd by_modified_index_key(user_id), timestamp, doc_id, cb
@@ -175,14 +210,14 @@ dbi = (con, model) ->
           unless snapshot
             return cb 'received null snapshot'
           unless snapshot.published and snapshot.slug
-            return cb 'abort'
+            return cb null
           pubdate = new XDate(snapshot.published)
           unless pubdate.valid()
             return cb 'invalid publication date'
           timestamp = pubdate.getTime()
           con.zadd by_published_index_key(user_id), timestamp, doc_id, cb
       ], (err, result) ->
-        if err and err isnt 'abort'
+        if err
           console.error 'updateDocumentIndexScore error:', err
         return callback err, true
 
