@@ -174,15 +174,13 @@ body {
   margin-bottom: 10px;
 }
 
-#login input[type="text"],
-#login input[type="password"] {
-  width: 246px;
+#login input {
+  width: 100%;
   margin-bottom: 10px;
   display: block;
 }
 
 #login input[type="submit"] {
-  width: 100%;
   height: 40px;
 }
 
@@ -215,6 +213,8 @@ body {
 
 
 input[type="text"],
+input[type="email"],
+input[type="password"],
 input[type="datetime-local"] {
   font-size: 18px;
   border: solid 1px;
