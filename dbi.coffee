@@ -147,7 +147,7 @@ dbi = (con, model) ->
           @docsByModified user_id, filter.modified_since, (err, docs) ->
             return cb err, user_id, docs_by_created, docs
         (user_id, docs_by_created, docs_by_modified, cb) =>
-          unless filter.published_since
+          unless filter.published_since?
             # Don't call the database, return the docs_by_created instead When
             # the user doesn't specify `published_since` we should not filter
             # out docs that are private. But the docs_by_published index doesn't
