@@ -1,12 +1,6 @@
 * Features & Issues
-** it should be able to add a new document using the "Search docs" textbox
-    when the user types something to the box, we'll insert a "Create new
-    document" entry into the documents index and highlight it.
-
-    Pressing enter would create a new doc with the entered text as the title.
-
-    Pressing down arrow key would allow the user to navigate and select existing
-    documents.
+** Pressing enter in the searchbox should click on the first item in the list
+    Maybe we want to highlight the item to signify this?
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
    documents and just load the new stuff.

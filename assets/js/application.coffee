@@ -108,12 +108,13 @@ $("#searchbox").live "keyup", (e) ->
   if e.which is 40
     e.preventDefault()
     $("#documents li:visible:first a").addClass("focus", true).focus()
-  pattern = $("#searchbox").val()
+  pattern = $("#searchbox").val().trim()
   filter = (index, element) ->
     $e = $(element)
     $e.toggle matchTextDwim(pattern, $e.find("a h3").text())
   _.defer ->
-    $("#documents li").each filter
+    $('#new-document').toggle(not _.isEmpty(pattern)).find('h3').text(pattern)
+    $("#documents li").slice(1).each filter
 
 $("#documents li a").live "keydown", (e) ->
   if e.which is 40
@@ -134,6 +135,13 @@ $("#documents li a").live "focusout", (e) ->
 
 $('#set-current-time').live 'click', () ->
   $('#published-date').val (new XDate).toString('d MMMM yyyy')
+
+$('#new-document').live 'click', (e) ->
+  e.preventDefault()
+  $.post '/api/documents/', { title: $('#searchbox').val().trim() }, (doc) ->
+    if doc.id
+      window.location = "/documents/#{doc.id}"
+
 
 # Parse the date given in format "24 March 2012" (local time) and return a UTC
 # XDate object

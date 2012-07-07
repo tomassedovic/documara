@@ -56,15 +56,15 @@ server.get '/documents/:id', (req, res) ->
   res.sendfile __dirname + '/static/index.html'
 
 
-server.post '/documents/', (req, res) ->
+server.post '/api/documents/', (req, res) ->
   if isLoggedIn(req.session)
     doc =
-      body: ''
-      title: ''
+      body: req.body.body or ''
+      title: req.body.title or ''
     db.createDocument req.session.user.email, doc, (err, doc_id) ->
       if err
         return sendJSON res, { error: err }, 500
-      res.redirect "/documents/#{doc_id}"
+      return sendJSON res, { id: doc_id }, 201
   else
     return sendJSON res, { error: 'not logged in'}, 401
 

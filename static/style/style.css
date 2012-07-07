@@ -60,6 +60,10 @@ body {
   list-style-type: none;
 }
 
+#documents li#new-document {
+  display: none;
+}
+
 #documents-container li a {
   display: block;
   text-decoration: none;
@@ -90,6 +94,10 @@ body {
   color: gray;
 }
 
+#documents-container li a:hover em,
+#documents-container li a.selected em {
+  color: gray;
+}
 
 #title-wrapper {
   position: absolute;
