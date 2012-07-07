@@ -8,6 +8,7 @@ RedisSessionStore = require('connect-redis')(connect)
 redis = require('redis').createClient()
 u_ = require('underscore')
 async = require('async')
+XDate = require 'xdate'
 dbi = require('./dbi')
 
 
@@ -72,7 +73,25 @@ server.get '/api/documents/', (req, res) ->
   unless isLoggedIn(req.session)
     return sendJSON res, { error: 'not logged in'}, 401
 
+  processTimeFilter = (filter, query_name) ->
+    unless req.query[query_name]
+      return
+    d = XDate(req.query[query_name], true)
+    if d.valid()
+      filter[query_name] = d.getTime()
+    else if req.query[query_name] is 'all'
+      filter[query_name] = 0
+    else
+      throw new Error(query_name)
+
   filter = {}
+  try
+    processTimeFilter filter, 'created_since'
+    processTimeFilter filter, 'modified_since'
+    processTimeFilter filter, 'published_since'
+  catch err
+    return sendJSON res, { error: err.message}, 400
+
   db.documents req.session.user.email, filter, (err, docs) ->
     if err
       return sendJSON res, { error: err }, 500
