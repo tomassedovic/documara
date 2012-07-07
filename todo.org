@@ -1,6 +1,4 @@
 * Features & Issues
-** Pressing enter in the searchbox should click on the first item in the list
-    Maybe we want to highlight the item to signify this?
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
    documents and just load the new stuff.
