@@ -1,4 +1,5 @@
 * Features & Issues
+** speed up the document search
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
    documents and just load the new stuff.
