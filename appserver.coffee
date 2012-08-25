@@ -29,6 +29,32 @@ server.use connect.static("#{__dirname}/static")
 # Inform connect-assets that it should compile this coffeescript file
 js('application')
 
+MustBeLoggedInError = (() ->)
+InvalidCredentialsError = (() ->)
+
+requireLoggedIn = (req, res, next) ->
+  if isSessionLoggedIn(req.session)
+    return next()
+
+  [email, password] = getBasicAuthCredentials(req)
+  unless email and password
+    return next(new MustBeLoggedInError)
+
+  db.validCredentials email, password, (err, valid) ->
+    if valid
+      req.session.user = { email: email }
+      return next()
+    else
+      return next(new InvalidCredentialsError)
+
+server.error (err, req, res, next) ->
+  if err instanceof MustBeLoggedInError
+    sendJSON res, {"error": "you must be logged in"}, 401
+  else if err instanceof InvalidCredentialsError
+    sendJSON res, {"error": "invalid email or password"}, 401
+  else
+    next err
+
 
 server.get '/login', (req, res) ->
   sendJSON res, req.session.user or {}, 200
@@ -56,23 +82,17 @@ server.get '/documents/:id', (req, res) ->
   res.sendfile __dirname + '/static/index.html'
 
 
-server.post '/api/documents/', (req, res) ->
-  if isLoggedIn(req.session)
-    doc =
-      body: req.body.body or ''
-      title: req.body.title or ''
-    db.createDocument req.session.user.email, doc, (err, doc_id) ->
-      if err
-        return sendJSON res, { error: err }, 500
-      return sendJSON res, { id: doc_id }, 201
-  else
-    return sendJSON res, { error: 'not logged in'}, 401
+server.post '/api/documents/', requireLoggedIn, (req, res) ->
+  doc =
+    body: req.body.body or ''
+    title: req.body.title or ''
+  db.createDocument req.session.user.email, doc, (err, doc_id) ->
+    if err
+      return sendJSON res, { error: err }, 500
+    return sendJSON res, { id: doc_id }, 201
 
 
-server.get '/api/documents/', (req, res) ->
-  unless isLoggedIn(req.session)
-    return sendJSON res, { error: 'not logged in'}, 401
-
+server.get '/api/documents/', requireLoggedIn, (req, res) ->
   processTimeFilter = (filter, query_name) ->
     unless req.query[query_name]
       return
@@ -127,8 +147,18 @@ getSession = (headers, callback) ->
     console.warn 'Exception inside getSession:', ex
     return callback {}
 
-isLoggedIn = (session) ->
-  session and session.user and session.user.email
+isSessionLoggedIn = (session) ->
+  return session and session.user and session.user.email
+
+getBasicAuthCredentials = (req) ->
+  basic_auth = req.headers['authorization']
+  if basic_auth? and not u_.isEmpty(basic_auth)
+    decoded = (new Buffer(basic_auth.split(' ')[1], 'base64')).toString('ascii')
+    i = decoded.indexOf(':')
+    return [decoded.slice(0, i), decoded.slice(i + 1)]
+  else
+    return [null, null]
+
 
 
 throttledReindex = {}
@@ -145,7 +175,7 @@ documentChanged = (action, login, doc_id) ->
 
 authenticateSharejs = (agent, action) ->
   getSession agent.headers, (session) ->
-    if not isLoggedIn(session)
+    if not isSessionLoggedIn(session)
       return action.reject()
     if action.type is 'connect'
       return action.accept()
