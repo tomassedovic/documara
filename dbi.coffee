@@ -114,12 +114,22 @@ dbi = (con, model) ->
           return callback null, score?
 
 
-    getDocument: (doc_id, callback) ->
+    getDocument: (owner_login, doc_id, callback) ->
       callback = (() ->) unless callback?
-      model.getSnapshot doc_id, (err, snapshot) ->
+      @findUserIdFromLogin owner_login, (err, user_id) ->
         if err
           return callback err, null
-        return callback null, sharejs_doc.snapshot
+        unless user_id
+          return callback { error: 'unknown user' }, null
+        model.getSnapshot doc_id, (err, sharejs_doc) ->
+          if err
+            return callback err, null
+          con.zscore by_modified_index_key(user_id), doc_id, (err, timestamp) ->
+            if err
+              return callback err, null
+            doc = (sharejs_doc?.snapshot || {})
+            doc.last_modified = format_date(parseInt(timestamp))
+            return callback null, doc
 
 
 
@@ -161,7 +171,8 @@ dbi = (con, model) ->
             return cb null, u_.intersection(docs_by_modified, docs_by_published,
                                             docs_by_created)
       ], (err, result) ->
-        console.log 'error', err
+        if err
+          console.error 'error', err
         return callback err, result
 
 

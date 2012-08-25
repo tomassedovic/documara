@@ -45,7 +45,6 @@ openDocument = ->
     doc.at("body").attach_textarea $editor[0]
     $title = $("#title")
     attachTextbox doc.at("title"), $title
-    attachLastModified $editor, $title, doc.at("last_modified")
     $('#publish').live 'click', publishCallback(doc)
     showPage "document-show"
     renderFooter(doc.snapshot)

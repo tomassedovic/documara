@@ -117,8 +117,7 @@ server.get '/api/documents/', requireLoggedIn, (req, res) ->
       return sendJSON res, { error: err }, 500
     async.map docs
     , (doc_id, callback) ->
-      server.model.getSnapshot doc_id, (err, doc) ->
-        doc = (doc?.snapshot || {})
+      db.getDocument req.session.user.email, doc_id, (err, doc) ->
         result = u_.pick(doc, 'title', 'created', 'last_modified')
         result.id = doc_id
         return callback err, result
