@@ -118,14 +118,27 @@ server.get '/api/documents/', requireLoggedIn, (req, res) ->
     async.map docs
     , (doc_id, callback) ->
       db.getDocument req.session.user.email, doc_id, (err, doc) ->
-        result = u_.pick(doc, 'title', 'created', 'last_modified')
+        if req.query.full_doc == 'true'
+          result = u_.extend({}, doc)
+        else
+          result = u_.pick(doc, 'title', 'created', 'last_modified', 'published', 'slug')
         result.id = doc_id
+        result.author = req.session.user.email
         return callback err, result
     , (err, result) ->
       if err
         return sendJSON res, { error: err }, 500
       return sendJSON res, result, 200
 
+
+server.get '/api/documents/:doc_id', requireLoggedIn, (req, res) ->
+  doc_id = req.params.doc_id
+  db.getDocument req.session.user.email, doc_id, (err, doc) ->
+    if err?
+      return sendJSON res, { error: err }, 404
+    doc.id = doc_id
+    doc.author = req.session.user.email
+    return sendJSON res, doc, 200
 
 sendJSON = (res, data, code) ->
   res.header 'Content-Type', 'application/json; charset=utf-8'
