@@ -9,29 +9,6 @@ dbi = require('./dbi')
 api = require('./api')
 
 
-sessionConfig =
-  key: 'sid'
-  secret: 'my secret here'
-  store: new RedisSessionStore
-
-
-server = express.createServer()
-server.use connect.logger()
-server.use connect.cookieParser()
-server.use connect.session(sessionConfig)
-server.use connect.bodyParser()
-server.use assets()
-server.use connect.static("#{__dirname}/static")
-
-# Inform connect-assets that it should compile this coffeescript file
-js('application')
-
-
-server.get '/documents/:id', (req, res) ->
-  res.sendfile __dirname + '/static/index.html'
-
-
-
 getSession = (headers, callback) ->
   try
     parsed = cookie.parse(headers.cookie)
@@ -44,9 +21,8 @@ getSession = (headers, callback) ->
     console.warn 'Exception inside getSession:', ex
     return callback {}
 
-throttledReindex = {}
-
 documentChanged = (action, login, doc_id) ->
+  throttledReindex = throttledReindex ? {}
   console.log("document changed: #{doc_id}, action: #{action}")
   unless doc_id of throttledReindex
     reindexDoc = () ->
@@ -71,6 +47,30 @@ authenticateSharejs = (agent, action) ->
       action.accept()
       if action.type in ['create', 'update', 'delete']
         documentChanged(action.type, session.user.email, action.docName)
+
+
+
+server = express.createServer()
+server.use connect.logger()
+server.use connect.cookieParser()
+server.use connect.bodyParser()
+
+sessionConfig =
+  key: 'sid'
+  secret: 'my secret here'
+  store: new RedisSessionStore
+
+server.use connect.session(sessionConfig)
+
+server.use assets()
+server.use connect.static("#{__dirname}/static")
+
+# Inform connect-assets that it should compile this coffeescript file
+js('application')
+
+
+server.get '/documents/:id', (req, res) ->
+  res.sendfile __dirname + '/static/index.html'
 
 
 sharejsOptions =
