@@ -1,13 +1,13 @@
 connect = require('connect')
-express = require('express')
-sharejs = require('share').server
-cookie = require('cookie')
 assets = require('connect-assets')
 RedisSessionStore = require('connect-redis')(connect)
+cookie = require('cookie')
+express = require('express')
+sharejs = require('share').server
 u_ = require('underscore')
-dbi = require('./dbi')
-api = require('./api')
 
+api = require('./api')
+dbi = require('./dbi')
 
 getSession = (headers, callback) ->
   try

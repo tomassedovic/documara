@@ -1,6 +1,6 @@
-us = require('underscore')
 async = require('async')
 XDate = require('xdate')
+us = require('underscore')
 
 
 exports.isSessionLoggedIn = isSessionLoggedIn = (session) ->
