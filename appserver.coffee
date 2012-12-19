@@ -50,26 +50,26 @@ authenticateSharejs = (agent, action) ->
 
 
 
-server = express.createServer()
-server.use connect.logger()
-server.use connect.cookieParser()
-server.use connect.bodyParser()
+app = express()
+app.use connect.logger()
+app.use connect.cookieParser()
+app.use connect.bodyParser()
 
 sessionConfig =
   key: 'sid'
   secret: 'my secret here'
   store: new RedisSessionStore
 
-server.use connect.session(sessionConfig)
+app.use connect.session(sessionConfig)
 
-server.use assets()
-server.use connect.static("#{__dirname}/static")
+app.use assets()
+app.use connect.static("#{__dirname}/static")
 
 # Inform connect-assets that it should compile this coffeescript file
 js('application')
 
 
-server.get '/documents/:id', (req, res) ->
+app.get '/documents/:id', (req, res) ->
   res.sendfile __dirname + '/static/index.html'
 
 
@@ -78,10 +78,10 @@ sharejsOptions =
     type: 'redis'
   auth: authenticateSharejs
 
-sharejs.attach server, sharejsOptions
-db = dbi.connect server.model
-api.connectServer(server, db)
+sharejs.attach app, sharejsOptions
+db = dbi.connect app.model
+api.attach(app, db)
 
 PORT = process.argv[2] or 8080
-server.listen PORT
+app.listen PORT
 console.log "Server running at port #{PORT}"
