@@ -48,29 +48,51 @@ authenticateSharejs = (agent, action) ->
       if action.type in ['create', 'update', 'delete']
         documentChanged(action.type, session.user.email, action.docName)
 
+setupMiddleware = (app) ->
+  app.use connect.logger()
+  app.use connect.cookieParser()
+  app.use connect.session(sessionConfig)
+  app.use connect.bodyParser()
+
+
 
 
 app = express()
-app.use connect.logger()
-app.use connect.cookieParser()
-app.use connect.bodyParser()
 
 sessionConfig =
   key: 'sid'
-  secret: 'my secret here'
   store: new RedisSessionStore
 
-app.use connect.session(sessionConfig)
+switch app.get 'env'
+  when 'development'
+      console.log('Running in development mode')
 
-app.use assets()
-app.use connect.static("#{__dirname}/static")
+      sessionConfig.secret = 'my secret here'
+      setupMiddleware app
+      PORT = process.argv[2] or 8080
 
-# Inform connect-assets that it should compile this coffeescript file
-js('application')
+      app.use assets()
+      # Inform connect-assets that it should compile this coffeescript file
+      js('application')
 
+      app.use connect.static("#{__dirname}/static")
 
-app.get '/documents/:id', (req, res) ->
-  res.sendfile __dirname + '/static/index.html'
+      app.get '/documents/:id', (req, res) ->
+        res.sendfile __dirname + '/static/index.html'
+
+  when 'production'
+      console.log('Running in production mode')
+
+      settings_path = "#{__dirname}/settings.json"
+      fs = require('fs')
+      s = fs.readFileSync(settings_path, 'utf-8')
+      settings = JSON.parse(s)
+
+      sessionConfig.secret = settings.session_secret
+      setupMiddleware app
+      PORT = settings.port
+  else
+    console.error "Unknown environment: '#{app.get('env')}'"
 
 
 sharejsOptions =
@@ -82,6 +104,5 @@ sharejs.attach app, sharejsOptions
 db = dbi.connect app.model
 api.attach(app, db)
 
-PORT = process.argv[2] or 8080
 app.listen PORT
 console.log "Server running at port #{PORT}"
