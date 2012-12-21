@@ -73,12 +73,18 @@ switch app.get 'env'
 
       app.use assets()
       # Inform connect-assets that it should compile this coffeescript file
-      js('application')
+      js('documents')
 
       app.use connect.static("#{__dirname}/static")
 
+      app.get '/', (req, res) ->
+        res.redirect '/documents/'
+
+      app.get '/documents/', (req, res) ->
+        res.sendfile __dirname + '/static/documents.html'
+
       app.get '/documents/:id', (req, res) ->
-        res.sendfile __dirname + '/static/index.html'
+        res.sendfile __dirname + '/static/documents.html'
 
   when 'production'
       console.log('Running in production mode')
