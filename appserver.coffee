@@ -71,20 +71,30 @@ switch app.get 'env'
       setupMiddleware app
       PORT = process.argv[2] or 8080
 
-      app.use assets()
-      # Inform connect-assets that it should compile this coffeescript file
-      js('documents')
-
       app.use connect.static("#{__dirname}/static")
+      app.use assets()
 
       app.get '/', (req, res) ->
         res.redirect '/documents/'
+
+
+      # compile `assets/documents.coffee`
+      js('documents')
 
       app.get '/documents/', (req, res) ->
         res.sendfile __dirname + '/static/documents.html'
 
       app.get '/documents/:id', (req, res) ->
         res.sendfile __dirname + '/static/documents.html'
+
+      # compile `assets/lists.coffee`
+      js('lists')
+
+      app.get '/lists/', (req, res) ->
+        res.sendfile __dirname + '/static/lists.html'
+
+      app.get '/lists/:id', (req, res) ->
+        res.sendfile __dirname + '/static/lists.html'
 
   when 'production'
       console.log('Running in production mode')
