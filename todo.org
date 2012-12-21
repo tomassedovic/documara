@@ -1,7 +1,4 @@
 * Features & Issues
-** Integrate lists
-   Both documents, lists and any other apps will hosted from the same project/site (at least initially).
-   They'll be using a lot of similar assets, the main difference should be their entry points (/documents/, /lists/, etc.) and corresponding html, js and css files.
 ** speed up the document search
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
