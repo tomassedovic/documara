@@ -73,6 +73,7 @@ switch app.get 'env'
 
       app.use connect.static("#{__dirname}/static")
       app.use assets()
+      js('utils')
 
       app.get '/', (req, res) ->
         res.redirect '/documents/'

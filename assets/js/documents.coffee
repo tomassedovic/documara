@@ -1,3 +1,5 @@
+utils = documaraUtils
+
 renderDocumentListItem = Mustache.compile($("#list-item-template").text())
 
 
@@ -48,13 +50,6 @@ openDocument = ->
     $('#publish').live 'click', publishCallback(doc)
     showPage "document-show"
     renderFooter(doc.snapshot)
-
-
-# Matches text to a given pattern ignoring case and character accents
-matchTextDwim = (pattern, text) ->
-  normalized = (text) ->
-    accent_fold text.toLowerCase()
-  normalized(text).indexOf(normalized(pattern)) >= 0
 
 
 showPage = (id) ->
@@ -121,7 +116,7 @@ $("#searchbox").live "keyup", (e) ->
   pattern = $("#searchbox").val().trim()
   filter = (index, element) ->
     $e = $(element)
-    $e.toggle matchTextDwim(pattern, $e.find("a h3").text())
+    $e.toggle utils.matchTextDwim(pattern, $e.find("a h3").text())
   _.defer ->
     $('#new-document').toggle(not _.isEmpty(pattern)).find('h3').text(pattern)
     $("#documents li").slice(1).each filter
@@ -153,28 +148,9 @@ $('#new-document').live 'click', (e) ->
       window.location = "/documents/#{doc.id}"
 
 
-# Parse the date given in format "24 March 2012" (local time) and return a UTC
-# XDate object
-parseHumanDate = (s) ->
-  months = XDate.locales[''].monthNames
-  parts = _.compact s.split ' '
-
-  year = parseInt(parts[2])
-  day = parseInt(parts[0])
-  unless $.isNumeric(year) and $.isNumeric(day)
-    return null
-  month = _.indexOf months, parts[1]
-  unless _.all([year, day, month], (n) -> n >= 0)
-    return null
-  result = XDate(year, month, day, 0, 0, 0, 1, true)
-  unless result.valid()
-    return null
-  return result
-
-
 publishCallback = (doc) ->
   return ->
-    published = parseHumanDate $('#published-date').val()
+    published = utils.parseHumanDate $('#published-date').val()
     slug = _.compact($('#slug').val().trim().split(' ')).join('-')
     unless published and slug
       return alert 'enter correct slug and date'
