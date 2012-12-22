@@ -70,10 +70,10 @@
 
 
 <!-- Templates -->
-<script id="list-item-template" type="js-template">
-  <a href="/documents/{{ id }}">
-    <h3>{{ title }}</h3>
-    <time datetime="{{ created }}">{{ human_time }}</time>
+<script id="list-item-template" type="underscore-template">
+  <a href="/documents/<%- id %>">
+    <h3><%- title %></h3>
+    <time datetime="<%- created %>"><%- human_time %></time>
   </a>
 </script>
 
@@ -84,7 +84,6 @@
 <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
 <script src="/js/xdate.js"></script>
 <script src="/js/underscore-min.js"></script>
-<script src="/js/mustache.js"></script>
 <script src="/js/accent-fold.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/documents.js"></script>

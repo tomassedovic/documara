@@ -1,6 +1,6 @@
 utils = documaraUtils
 
-renderDocumentListItem = Mustache.compile($("#list-item-template").text())
+renderDocumentListItem = _.template($("#list-item-template").text())
 
 
 documentId = ->
