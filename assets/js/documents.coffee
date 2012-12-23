@@ -12,14 +12,6 @@ documentId = ->
     null
 
 
-attachTextbox = (doc, $textbox) ->
-  $textbox.val doc.getText()
-  $textbox.live "keyup", ->
-    doc.set $textbox.val()
-  doc.on "child op", ->
-    console.log "title changed"
-
-
 attachLastModified = ($editor, $title, doc) ->
   last_checked_version = {}
   last_checked_version.body = $editor.val()
@@ -39,36 +31,27 @@ openDocument = ->
   sharejs.open documentId(), "json", (err, doc) ->
     if err
       console.log "Error connecting ShareJS:", err
-      showPage "login"  if err is "forbidden"
+      utils.showPage "login"  if err is "forbidden"
       return
 
     $editor = $("#editor")
     $editor.attr "disabled", false
     doc.at("body").attach_textarea $editor[0]
     $title = $("#title")
-    attachTextbox doc.at("title"), $title
+    utils.attachTextbox doc.at("title"), $title
     $('#publish').live 'click', publishCallback(doc)
-    showPage "document-show"
+    utils.showPage "document-show"
     renderFooter(doc.snapshot)
-
-
-showPage = (id) ->
-  $("section").hide()
-  console.log "showing page #" + id
-  $("section#" + id).show()
-  $.getJSON "/login", (data) ->
-    name = data and (data.name or data.email)
-    if name
-      $("#user-info .username").text name
-      $("#user-info").show()
 
 
 setupUI = ->
   unless documentId()
-    showPage "document-index"
+    utils.showPage "document-index"
     $.ajax "/api/documents/",
       success: (docs) ->
         $documents = $("#documents")
+        docs = _.filter docs, (doc) ->
+          doc.type isnt 'list'
         jQuery.each docs, (index, doc) ->
           $li = $("<li />")
           doc.human_time = (new XDate(doc.created)).toLocaleDateString()
@@ -77,7 +60,7 @@ setupUI = ->
         $("#searchbox").select()
       statusCode:
         401: ->
-          showPage "login"
+          utils.showPage "login"
     return
   openDocument()
 
