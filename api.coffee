@@ -40,8 +40,10 @@ exports.attach = (server, db) ->
 
   server.post '/api/documents/', requireLoggedIn, (req, res) ->
     doc =
-      body: req.body.body or ''
-      title: req.body.title or ''
+      body: ''
+      title: ''
+      type: null
+    us.extend doc, req.body
     db.createDocument req.session.user.email, doc, (err, doc_id) ->
       if err
         return sendJSON res, { error: err }, 500
@@ -77,7 +79,7 @@ exports.attach = (server, db) ->
           if req.query.full_doc == 'true'
             result = us.extend({}, doc)
           else
-            result = us.pick(doc, 'title', 'created', 'last_modified', 'published', 'slug')
+            result = us.pick(doc, 'title', 'created', 'last_modified', 'published', 'slug', 'type')
           result.id = doc_id
           result.author = req.session.user.email
           return callback err, result
