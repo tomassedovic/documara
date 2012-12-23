@@ -59,8 +59,6 @@ openDocument = ->
       appendListItem(item)
       $('#new-item').val('')
 
-    $("#hide-finished").live 'click', () ->
-      # TODO: toggle the finished items
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
@@ -112,10 +110,28 @@ createNewList = () ->
       window.location = "/lists/#{doc.id}"
 
 
-
 $('#create-new-list').live 'click', (e) ->
   e.preventDefault()
   createNewList()
+
+hideFinished = () ->
+  !!$('#hide-finished').data('hide-finished')
+
+
+$("#hide-finished").live 'click', () ->
+  $button = $(this)
+
+  hide = !hideFinished()
+  $button.data('hide-finished', hide)
+  if(hide)
+    animate = ($el) -> $el.slideUp('fast')
+    text = $button.data('text-show-all')
+  else
+    animate = ($el) -> $el.slideDown('fast')
+    text = $button.data('text-hide-finished')
+  $button.text(text)
+  animate($('#items input:checked').parent())
+
 
 
 $(document).ready ->
