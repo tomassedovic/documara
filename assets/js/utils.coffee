@@ -42,3 +42,8 @@ self.attachTextbox = attachTextbox = (doc, $textbox) ->
   $textbox.val doc.getText()
   $textbox.live "keyup", ->
     doc.set $textbox.val()
+
+self.keys = keys =
+  enter: 13
+  down_arrow: 40
+  up_arrow: 38

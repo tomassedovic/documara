@@ -132,6 +132,9 @@ $("#hide-finished").live 'click', () ->
   $button.text(text)
   animate($('#items input:checked').parent())
 
+$('#new-item').live 'keyup', (e) ->
+  if e.which is utils.keys.enter
+    $('#add-item').click()
 
 
 $(document).ready ->

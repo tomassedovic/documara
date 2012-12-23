@@ -81,17 +81,12 @@ $("#login form").live "submit", ->
 $("#searchbox").live "focusin", (e) ->
   setTimeout (-> $("#searchbox").select()), 10
 
-keys =
-  enter: 13
-  down_arrow: 40
-  up_arrow: 38
-
 $("#searchbox").live "keyup", (e) ->
-  if e.which is keys.enter
+  if e.which is utils.keys.enter
     $("#documents li:visible:first a").click()
     return
 
-  if e.which is keys.down_arrow
+  if e.which is utils.keys.down_arrow
     e.preventDefault()
     $("#documents li:visible:first a").addClass("focus", true).focus()
     return
@@ -105,11 +100,11 @@ $("#searchbox").live "keyup", (e) ->
     $("#documents li").slice(1).each filter
 
 $("#documents li a").live "keydown", (e) ->
-  if e.which is keys.down_arrow
+  if e.which is utils.keys.down_arrow
     e.preventDefault()
     $next = $(this).parent().nextAll(":visible").first().find("a")
     $next.focus()
-  if e.which is keys.up_arrow
+  if e.which is utils.keys.up_arrow
     e.preventDefault()
     $prev = $(this).parent().prevAll(":visible").first().find("a")
     $prev = $("#searchbox")  if $prev.length is 0
