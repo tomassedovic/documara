@@ -27,8 +27,8 @@
   <div id="document-area">
     <input id="list-title" type="text" placeholder="Your list title" />
 
+    <p class="empty">The list is empty. Try adding some items!</p>
     <ul id="items">
-      <p class="empty">The list is empty. Try adding some items!</p>
     </ul>
 
     <input id="new-item" type="text" />
@@ -55,23 +55,23 @@
 <!-- Templates -->
 <script id="item-template" type="underscore-template">
   <li>
-    <input id="item-<%- id %>" type="checkbox"
-           <% if(finished) { %> checked="checked" <% } %> />
-    <label for="item-<%- id %>">done</label>
-    <span class="text"><%- text %></span>
-    <% if(description && description.length > 0) { %>
+    <input id="item-<%- d.id %>" type="checkbox"
+           <% if(d.finished) { %> checked="checked" <% } %> />
+    <label for="item-<%- d.id %>">done</label>
+    <span class="title"><%- d.title %></span>
+    <% if(d.description && d.description.length > 0) { %>
       <div class="description">
-        <%- description %>
+        <%- d.description %>
       </div>
     <% } %>
   </li>
 </script>
 
 <script id="doc-template" type="underscore-template">
-  <li class="<%- selected %>">
-    <a href="/lists/<%- id %>">
-        <% var t = '[no title]'; try { if (title && title.length > 0) {t = title} } catch(ex) { } %>
-        <%- t %>
+  <li class="<%- d.selected %>">
+    <a href="/lists/<%- d.id %>">
+        <% if (d.title && d.title.length > 0) print(d.title)
+           else print('[no title]') %>
     </a>
   </li>
 </script>

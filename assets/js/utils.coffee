@@ -42,5 +42,3 @@ self.attachTextbox = attachTextbox = (doc, $textbox) ->
   $textbox.val doc.getText()
   $textbox.live "keyup", ->
     doc.set $textbox.val()
-  doc.on "child op", ->
-    console.log "textbox changed"
