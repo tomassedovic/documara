@@ -1,8 +1,7 @@
 * Features & Issues
-** Import Lists page skeleton
-** Load list titles/links into the index section (via API probably)
-** Hook up lists#show with sharejs
-** Add a new-list button
+** Hook up list items creation/rearrangement/completion
+** Make the lists pretty
+
 ** speed up the document search
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
