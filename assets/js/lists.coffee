@@ -28,6 +28,8 @@ openDocument = ->
     _.each itemsDoc.get(), (item) ->
       appendListItem(item)
 
+
+    # TODO: remove all the listeners on disconnect
     doc.at().on 'child op', (path, op) ->
       console.log('DOC CHILD OP')
       console.log path
@@ -36,6 +38,8 @@ openDocument = ->
       console.log('ITEMS CHILD OP')
       console.log path
       console.log op
+      if (path.length is 2) and (path[1] is 'finished')
+        $('#items input').eq(path[0]).prop('checked', op.oi)
     itemsDoc.on 'insert', (pos, item) ->
       console.log('LIST ITEM INSERTED')
       appendListItem(item)
@@ -59,6 +63,11 @@ openDocument = ->
       appendListItem(item)
       $('#new-item').val('')
 
+    $('#items input').live 'change', () ->
+      $this = $(this)
+      checked = $this.prop('checked')
+      index = $this.parent('li').index()
+      itemsDoc.at([index, 'finished']).set(checked)
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
