@@ -1,6 +1,10 @@
 * Features & Issues
-** Hook up list items creation/rearrangement/completion
+** Add list item rearrangement
+** Add list item description
+** ADd list item title/desc editing
+** Add list item deletion
 ** Make the lists pretty
+** Add list deletion
 
 ** Add filtering by document type into the Documara API
 *** GET /api/documents?type=lists
