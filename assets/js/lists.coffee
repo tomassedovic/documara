@@ -1,6 +1,6 @@
 utils = documaraUtils
 
-renderDocumentListItem = Mustache.compile($("#list-item-template").text())
+renderListLink = _.template($("#doc-template").text())
 
 documentId = ->
   regex = /^\/lists\/([-a-zA-Z0-9]+)/
@@ -11,72 +11,35 @@ documentId = ->
     null
 
 
-attachTextbox = (doc, $textbox) ->
-  $textbox.val doc.getText()
-  $textbox.live "keyup", ->
-    doc.set $textbox.val()
-  doc.on "child op", ->
-    console.log "title changed"
-
-
-attachLastModified = ($editor, $title, doc) ->
-  last_checked_version = {}
-  last_checked_version.body = $editor.val()
-  last_checked_version.title = $title.val()
-  timeout = 10 * 1000
-  setTimeout (->
-    if last_checked_version.body isnt $editor.val() or last_checked_version.title isnt $title.val()
-      last_checked_version.body = $editor.val()
-      last_checked_version.title = $title.val()
-      now = (new XDate).toISOString()
-      doc.set now
-    setTimeout arguments.callee, timeout
-  ), timeout
-
-
 openDocument = ->
   sharejs.open documentId(), "json", (err, doc) ->
     if err
       console.log "Error connecting ShareJS:", err
-      showPage "login"  if err is "forbidden"
+      utils.showPage "login"  if err is "forbidden"
       return
 
-    $editor = $("#editor")
-    $editor.attr "disabled", false
-    doc.at("body").attach_textarea $editor[0]
-    $title = $("#title")
-    attachTextbox doc.at("title"), $title
-    $('#publish').live 'click', publishCallback(doc)
-    showPage "document-show"
-    renderFooter(doc.snapshot)
-
-
-showPage = (id) ->
-  $("section").hide()
-  console.log "showing page #" + id
-  $("section#" + id).show()
-  $.getJSON "/login", (data) ->
-    name = data and (data.name or data.email)
-    if name
-      $("#user-info .username").text name
-      $("#user-info").show()
+    console.log(doc)
+    utils.attachTextbox doc.at('title'), $('#list-title')
 
 
 setupUI = ->
   unless documentId()
-    showPage "document-index"
+    utils.showPage "list-page"
     $.ajax "/api/documents/",
       success: (docs) ->
-        $documents = $("#documents")
-        jQuery.each docs, (index, doc) ->
-          $li = $("<li />")
-          doc.human_time = (new XDate(doc.created)).toLocaleDateString()
-          $li.html $(renderDocumentListItem(doc))
-          $documents.append $li
-        $("#searchbox").select()
+        docs = _.filter docs, (doc) -> doc.type is 'list'
+        console.log "TODO: display loaded lists"
+        console.log docs
+        $allLists = $('#all-docs')
+        _.each docs, (doc) ->
+          doc.selected = if (doc.id is documentId())
+            'selected'
+          else
+            ''
+          $allLists.append renderListLink(doc)
       statusCode:
         401: ->
-          showPage "login"
+          utils.showPage "login"
     return
   openDocument()
 
@@ -94,82 +57,20 @@ $("#login form").live "submit", ->
       $form.find(".alert").show()
   return false
 
-$("#searchbox").live "focusin", (e) ->
-  setTimeout (-> $("#searchbox").select()), 10
 
-keys =
-  enter: 13
-  down_arrow: 40
-  up_arrow: 38
-
-$("#searchbox").live "keyup", (e) ->
-  if e.which is keys.enter
-    $("#documents li:visible:first a").click()
-    return
-
-  if e.which is keys.down_arrow
-    e.preventDefault()
-    $("#documents li:visible:first a").addClass("focus", true).focus()
-    return
-
-  pattern = $("#searchbox").val().trim()
-  filter = (index, element) ->
-    $e = $(element)
-    $e.toggle utils.matchTextDwim(pattern, $e.find("a h3").text())
-  _.defer ->
-    $('#new-document').toggle(not _.isEmpty(pattern)).find('h3').text(pattern)
-    $("#documents li").slice(1).each filter
-
-$("#documents li a").live "keydown", (e) ->
-  if e.which is keys.down_arrow
-    e.preventDefault()
-    $next = $(this).parent().nextAll(":visible").first().find("a")
-    $next.focus()
-  if e.which is keys.up_arrow
-    e.preventDefault()
-    $prev = $(this).parent().prevAll(":visible").first().find("a")
-    $prev = $("#searchbox")  if $prev.length is 0
-    $prev.focus()
-
-$("#documents li a").live "focusin", (e) ->
-  $(this).addClass "selected"
-
-$("#documents li a").live "focusout", (e) ->
-  $(this).removeClass "selected"
-
-$('#set-current-time').live 'click', () ->
-  $('#published-date').val (new XDate).toString('d MMMM yyyy')
-
-$('#new-document').live 'click', (e) ->
-  e.preventDefault()
-  $.post '/api/documents/', { title: $('#searchbox').val().trim() }, (doc) ->
+createNewList = () ->
+  initialData =
+    title: '',
+    type: 'list'
+  $.post '/api/documents/', initialData, (doc) ->
     if doc.id
-      window.location = "/documents/#{doc.id}"
+      window.location = "/lists/#{doc.id}"
 
 
-publishCallback = (doc) ->
-  return ->
-    published = utils.parseHumanDate $('#published-date').val()
-    slug = _.compact($('#slug').val().trim().split(' ')).join('-')
-    unless published and slug
-      return alert 'enter correct slug and date'
-    doc.setAt ['published'], published.toISOString()
-    doc.setAt ['slug'], slug
-    renderFooter(doc.snapshot)
 
-
-renderFooter = (snapshot) ->
-  $form = $('#publish-form')
-  $info = $('#publication-info')
-  if snapshot.published and snapshot.slug
-    $form.hide()
-    $info.show()
-    date = (new XDate(snapshot.published))
-    $info.find('a').attr('href', "/public/#{date.toString('yyyy-MM-dd')}/#{snapshot.slug}")
-    $info.find('time').text(date.toLocaleDateString())
-  else
-    $info.hide()
-    $form.show()
+$('#create-new-list').live 'click', (e) ->
+  e.preventDefault()
+  createNewList()
 
 
 $(document).ready ->

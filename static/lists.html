@@ -21,7 +21,7 @@
 <section id="list-page">
   <nav id="all-docs">
     <ul> </ul>
-    <a id="create-new-list" href="#">Create a new list</a>
+    <button id="create-new-list" type="button">Create a new list</button>
   </nav>
 
   <div id="document-area">
@@ -69,8 +69,8 @@
 
 <script id="doc-template" type="underscore-template">
   <li class="<%- selected %>">
-    <a href="/<%- id %>">
-        <% var t = '[empty]'; try { if (title && title.length > 0) {t = title} } catch(ex) { } %>
+    <a href="/lists/<%- id %>">
+        <% var t = '[no title]'; try { if (title && title.length > 0) {t = title} } catch(ex) { } %>
         <%- t %>
     </a>
   </li>

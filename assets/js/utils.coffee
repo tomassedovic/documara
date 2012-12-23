@@ -26,3 +26,21 @@ self.parseHumanDate = parseHumanDate = (s) ->
   unless result.valid()
     return null
   return result
+
+self.showPage = showPage = (id) ->
+  showPage = (id) ->
+  $("section").hide()
+  console.log "showing page #" + id
+  $("section#" + id).show()
+  $.getJSON "/login", (data) ->
+    name = data and (data.name or data.email)
+    if name
+      $("#user-info .username").text name
+      $("#user-info").show()
+
+self.attachTextbox = attachTextbox = (doc, $textbox) ->
+  $textbox.val doc.getText()
+  $textbox.live "keyup", ->
+    doc.set $textbox.val()
+  doc.on "child op", ->
+    console.log "textbox changed"
