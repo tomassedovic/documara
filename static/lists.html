@@ -18,48 +18,31 @@
 </section>
 
 
-<section id="document-show">
-  <div id="title-wrapper">
-    <input type="text" id="title" placeholder="Document title"></input>
-  </div>
-  <div id="editor-wrapper">
-    <textarea id="editor" disabled="disabled">connecting...</textarea>
-  </div>
-  <footer>
-    <form id="publish-form" action="/">
-      <p>
-        <label for="published-date">Published on</label>
-        <input type="text" id="published-date" placeholder="24 March 2012">
-        <button id="set-current-time" type="button">Now</button>
-        <button id="pick-date" type="button" disabled="disabled">Pick a date</button>
-      </p>
-      <p>
-        <label for="slug">http://documara.com/public/</label>
-        <input type="text" id="slug" placeholder="my-new-post">
-      </p>
-      <button id="publish" type="button">Make public!</button>
-    </form>
-    <div id="publication-info">
-      <a href="">Published on <time></time></a>
-    </div>
-  </footer>
-  <a id="back-to-index" href="/">&lt;&lt; all documents</a>
-</section>
+<section id="list-page">
+  <nav id="all-docs">
+    <ul> </ul>
+    <a id="create-new-list" href="#">Create a new list</a>
+  </nav>
 
+  <div id="document-area">
+    <input id="list-title" type="text" placeholder="Your list title" />
 
-<section id="document-index">
-  <div id="searchbox-wrapper">
-    <input id="searchbox" type="text" name="searchbox"
-           placeholder="Type new or existing document title" />
-  </div>
-  <div id="documents-container">
-    <ul id="documents">
-      <li id="new-document">
-        <a href=""><h3></h3><em>Create a new document</em></a>
-      </li>
+    <ul id="items">
+      <p class="empty">The list is empty. Try adding some items!</p>
     </ul>
+
+    <input id="new-item" type="text" />
+    <button id="add-item" type="button" class="btn">Add</button>
+
+    <div id="action-buttons">
+      <button id="hide-finished" type="button" data-toggle-text="Show all items"
+              class="btn">
+        Clean up
+      </button>
+    </div>
   </div>
 </section>
+
 
 <div id="user-info">
   <span class="username">Anonymous</span>
@@ -70,12 +53,30 @@
 
 
 <!-- Templates -->
-<script id="list-item-template" type="js-template">
-  <a href="/lists/{{ id }}">
-    <h3>{{ title }}</h3>
-    <time datetime="{{ created }}">{{ human_time }}</time>
-  </a>
+<script id="item-template" type="underscore-template">
+  <li>
+    <input id="item-<%- id %>" type="checkbox"
+           <% if(finished) { %> checked="checked" <% } %> />
+    <label for="item-<%- id %>">done</label>
+    <span class="text"><%- text %></span>
+    <% if(description && description.length > 0) { %>
+      <div class="description">
+        <%- description %>
+      </div>
+    <% } %>
+  </li>
 </script>
+
+<script id="doc-template" type="underscore-template">
+  <li class="<%- selected %>">
+    <a href="/<%- id %>">
+        <% var t = '[empty]'; try { if (title && title.length > 0) {t = title} } catch(ex) { } %>
+        <%- t %>
+    </a>
+  </li>
+</script>
+
+
 
 <script src="/channel/bcsocket.js"></script>
 <script src="/share/share.js"></script>
@@ -84,7 +85,6 @@
 <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
 <script src="/js/xdate.js"></script>
 <script src="/js/underscore-min.js"></script>
-<script src="/js/mustache.js"></script>
 <script src="/js/accent-fold.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/lists.js"></script>
