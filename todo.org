@@ -2,6 +2,9 @@
 ** Hook up list items creation/rearrangement/completion
 ** Make the lists pretty
 
+** Add filtering by document type into the Documara API
+*** GET /api/documents?type=lists
+
 ** speed up the document search
 ** speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
