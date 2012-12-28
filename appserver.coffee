@@ -73,29 +73,21 @@ switch app.get 'env'
 
       app.use connect.static("#{__dirname}/static")
       app.use assets()
-      js('utils')
 
       app.get '/', (req, res) ->
         res.redirect '/documents/'
 
 
-      # compile `assets/documents.coffee`
-      js('documents')
-
-      app.get '/documents/', (req, res) ->
+      renderPage = (req, res) ->
+        js('utils')
+        js('documents')
+        js('lists')
         res.sendfile __dirname + '/static/documents.html'
 
-      app.get '/documents/:id', (req, res) ->
-        res.sendfile __dirname + '/static/documents.html'
-
-      # compile `assets/lists.coffee`
-      js('lists')
-
-      app.get '/lists/', (req, res) ->
-        res.sendfile __dirname + '/static/documents.html'
-
-      app.get '/lists/:id', (req, res) ->
-        res.sendfile __dirname + '/static/documents.html'
+      app.get '/documents/', renderPage
+      app.get '/documents/:id', renderPage
+      app.get '/lists/', renderPage
+      app.get '/lists/:id', renderPage
 
   when 'production'
       console.log('Running in production mode')
