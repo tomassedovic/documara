@@ -152,5 +152,6 @@ renderFooter = (snapshot) ->
 
 
 $(document).ready ->
+  return unless utils.currentSection() is 'documents'
   jQuery.ajaxSetup cache: false
   setupUI()

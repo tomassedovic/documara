@@ -92,10 +92,10 @@ switch app.get 'env'
       js('lists')
 
       app.get '/lists/', (req, res) ->
-        res.sendfile __dirname + '/static/lists.html'
+        res.sendfile __dirname + '/static/documents.html'
 
       app.get '/lists/:id', (req, res) ->
-        res.sendfile __dirname + '/static/lists.html'
+        res.sendfile __dirname + '/static/documents.html'
 
   when 'production'
       console.log('Running in production mode')

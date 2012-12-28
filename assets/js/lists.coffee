@@ -147,5 +147,6 @@ $('#new-item').live 'keyup', (e) ->
 
 
 $(document).ready ->
+  return unless utils.currentSection() is 'lists'
   jQuery.ajaxSetup cache: false
   setupUI()

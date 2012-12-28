@@ -47,3 +47,10 @@ self.keys = keys =
   enter: 13
   down_arrow: 40
   up_arrow: 38
+
+self.currentSection = currentSection = () ->
+  pathSegments = document.location.pathname.split('/')
+  if _.size(pathSegments) > 1
+    pathSegments[1]
+  else
+    alert('Cannot get the current section')

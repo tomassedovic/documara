@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Documents&thinsp;&mdash;&thinsp;Documara</title>
+  <title>Documara</title>
   <link rel="stylesheet" href="/style/documents.css" />
+  <link rel="stylesheet" href="/style/lists.css" />
 </head> <body>
 
 
@@ -62,13 +63,44 @@
 </section>
 
 <div id="user-info">
-  Switch to
+  Section
+  <a href="/documents/">Documents</a>
   <a href="/lists/">Lists</a>
   <span class="username">Anonymous</span>
   <form id="logout-form" action="/logout" method="POST">
     <input type="submit" value="Logout"></input>
   </form>
 </div>
+
+
+
+<section id="list-page">
+  <nav id="all-docs">
+    <ul> </ul>
+    <button id="create-new-list" type="button">Create a new list</button>
+  </nav>
+
+  <div id="document-area">
+    <input id="list-title" type="text" placeholder="Your list title" />
+
+    <p class="empty">The list is empty. Try adding some items!</p>
+    <ul id="items">
+    </ul>
+
+    <input id="new-item" type="text" />
+    <button id="add-item" type="button" class="btn">Add</button>
+
+    <div id="action-buttons">
+      <button id="hide-finished" type="button"
+              data-text-hide-finished="Hide finished"
+              data-text-show-all="Show all items"
+              class="btn">
+        Hide finished
+      </button>
+    </div>
+  </div>
+</section>
+
 
 
 <!-- Templates -->
@@ -78,6 +110,30 @@
     <time datetime="<%- created %>"><%- human_time %></time>
   </a>
 </script>
+
+<script id="item-template" type="underscore-template">
+  <li>
+    <input id="item-<%- d.id %>" type="checkbox"
+           <% if(d.finished) { %> checked="checked" <% } %> />
+    <label for="item-<%- d.id %>">done</label>
+    <span class="title"><%- d.title %></span>
+    <% if(d.description && d.description.length > 0) { %>
+      <div class="description">
+        <%- d.description %>
+      </div>
+    <% } %>
+  </li>
+</script>
+
+<script id="doc-template" type="underscore-template">
+  <li class="<%- d.selected %>">
+    <a href="/lists/<%- d.id %>">
+        <% if (d.title && d.title.length > 0) print(d.title)
+           else print('[no title]') %>
+    </a>
+  </li>
+</script>
+
 
 <script src="/channel/bcsocket.js"></script>
 <script src="/share/share.js"></script>
@@ -89,4 +145,5 @@
 <script src="/js/accent-fold.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/documents.js"></script>
+<script src="/js/lists.js"></script>
 </body> </html>
