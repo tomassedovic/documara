@@ -1,0 +1,11 @@
+#items {
+  width: 150px;
+  padding: 2em;
+}
+
+#items li {
+  background: #EBEEF2;
+}
+#items li:hover {
+  background: white;
+}

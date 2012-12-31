@@ -71,8 +71,14 @@ openDocument = ->
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
-  item = _.extend({id: this.uniqueIdCounter}, item)
-  $("#items").append renderListItem(item)
+  desc = (_.range(Math.floor(Math.random() * 10)).map (n) -> 'wordy').join(' ')
+  item = _.extend({id: this.uniqueIdCounter, description: desc}, item)
+  $el = $(renderListItem(item))
+  $("#items").append($el)
+  makeListSortable($el)
+  # $el.find('.title').on 'click', (e) ->
+  #   # TODO: show an edit textbox instead
+  #   $(this).css({background: 'blue'})
 
 
 setupUI = ->
@@ -93,6 +99,94 @@ setupUI = ->
           utils.showPage "login"
     return
   openDocument()
+
+
+
+makeListSortable = ($el) ->
+  sign = (num) ->
+    if num < 0
+      -1
+    else if num > 0
+      1
+    else
+      0
+
+  shouldSwap = ($dragged, offset, $target, direction) ->
+    return false unless $target?
+    return false if direction is 0
+
+    smallerHeight = Math.min($target.height(), $dragged.height())
+    tolerance = Math.floor(smallerHeight / 2)
+    if direction is 1
+      difference = (offset.top + $dragged.height()) - $target.offset().top
+    else
+      difference = ($target.offset().top + $target.height()) - offset.top
+
+    return (difference >= tolerance)
+
+  getNeighbour = ($el, direction) ->
+    if (direction is 1) and !($el.is(':last-child'))
+      return $el.next()
+    else if (direction is -1) and !($el.is(':first-child'))
+      return $el.prev()
+
+  swap = ($dragged, $target, direction) ->
+    return if direction is 0
+    if direction is 1
+      $dragged.insertAfter($target)
+    else
+      $dragged.insertBefore($target)
+
+  draggedHelper = () ->
+    $dragged = $(this)
+    $dragged.clone().css({
+      width: "#{$dragged.width()}px"
+      height: "#{$dragged.height()}px"
+      background: "white"
+    })
+
+  options =
+    axis: 'y'
+    containment: 'parent'
+    helper: draggedHelper
+    distance: 3
+    stack: 'li'
+    zIndex: 1000
+    start: (event, ui) ->
+      $(this).data('pos', ui.offset)
+      $(this).data('lastTop', ui.offset.top)
+      $(this).css({visibility: 'hidden'})
+
+    drag: (event, ui) ->
+      $this = $(this)
+      # direction:
+      # 0: no change
+      # 1: moved down
+      # -1: moved up
+      direction = sign(ui.offset.top - $this.data('lastTop'))
+      $this.data('lastTop', ui.offset.top)
+
+      $target = getNeighbour($this, direction)
+
+      if shouldSwap($this, ui.offset, $target, direction)
+        swap($this, $target, direction)
+
+    stop: (event, ui) ->
+      # We must clone and reinsert the helper because the original one will be
+      # deleted immediately after the function exists -- before the animation
+      # colud start
+      $original = $(this)
+      $helper = ui.helper.clone().appendTo($('#items'))
+      delta = $original.offset().top - ui.offset.top
+      if delta > 0
+        animationValue = "+=#{delta}"
+      else
+        animationValue = "-=#{-delta}"
+      $helper.animate {top: animationValue}, 100, () ->
+        $original.css({visibility: 'visible'})
+        $helper.remove()
+
+  $el.draggable(options)
 
 
 $("#login form").live "submit", ->

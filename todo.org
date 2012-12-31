@@ -1,10 +1,17 @@
 * Features & Issues
-** Add list item rearrangement
+** Hook list rearrangement to ShareJS
 ** Add list item description
 ** ADd list item title/desc editing
 ** Add list item deletion
 ** Make the lists pretty
 ** Add list deletion
+
+** Generate more sensible document IDs -- either numbers or alphabetic
+   characters only (this makes it easier to manipulate the URL since the ID is
+   treated as a single word)
+
+** Have a look whether it makes more sense to abandon jQuery UI entirely and use
+   jQuery's Drag & Drop functionality directly for listSortable.
 
 ** Add filtering by document type into the Documara API
 *** GET /api/documents?type=lists
