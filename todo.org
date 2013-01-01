@@ -1,8 +1,8 @@
 * Features & Issues
 ** Add list item description
-** Add list item deletion
 ** Make the lists pretty
 ** Add list deletion
+** Undo for deletion
 
 ** Generate more sensible document IDs -- either numbers or alphabetic
    characters only (this makes it easier to manipulate the URL since the ID is

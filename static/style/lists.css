@@ -6,6 +6,24 @@
 #items li {
   background: #EBEEF2;
 }
+
 #items li:hover {
   background: white;
+}
+
+.add-description {
+  font-size: small;
+  margin-left: 3em;
+  visibility: hidden;
+}
+
+.remove-item {
+  font-size: small;
+  color: red;
+  visibility: hidden;
+}
+
+li:hover .add-description,
+li:hover .remove-item {
+  visibility: visible;
 }

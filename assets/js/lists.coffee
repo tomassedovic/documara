@@ -59,10 +59,7 @@ openDocument = ->
       else
         $el.insertAfter($target)
     itemsDoc.on 'delete', (pos, removedData) ->
-      console.log('LIST ITEM DELETED')
-      console.log(pos, removedData)
-      # No plans for deleting items yet, but this is how it should work:
-      # $('#items li').eq(pos).remove()
+      $('#items li').eq(pos).remove()
 
     $("#add-item").live 'click', () ->
       item =
@@ -109,6 +106,15 @@ openDocument = ->
         .val($this.text())
         .css({visibility: 'visible'})
         .focus()
+
+    $('#items').on 'click', '.remove-item', ->
+      index = $(this).parents('li').index()
+      $goner = $('#items li').eq(index)
+      # I normally prefer faster animations, but this is a destructive operation
+      # It's better to let the user know what's happening.
+      $goner.fadeOut 300, () ->
+        itemsDoc.at([index]).remove()
+        $goner.remove()
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
