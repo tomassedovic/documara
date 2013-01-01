@@ -67,7 +67,7 @@ openDocument = ->
         title: $('#new-item').val()
         finished: false
       itemsDoc.push(item)
-      appendListItem(item)
+      updateSortable(appendListItem(item))
       $('#new-item').val('')
 
     $('#items input').live 'change', () ->

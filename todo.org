@@ -1,5 +1,4 @@
 * Features & Issues
-** Hook list rearrangement to ShareJS
 ** Add list item description
 ** ADd list item title/desc editing
 ** Add list item deletion
