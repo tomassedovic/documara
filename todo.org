@@ -1,6 +1,5 @@
 * Features & Issues
 ** Add list item description
-** ADd list item title/desc editing
 ** Add list item deletion
 ** Make the lists pretty
 ** Add list deletion

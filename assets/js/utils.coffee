@@ -45,6 +45,7 @@ self.attachTextbox = attachTextbox = (doc, $textbox) ->
 
 self.keys = keys =
   enter: 13
+  esc: 27
   down_arrow: 40
   up_arrow: 38
 

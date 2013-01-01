@@ -42,6 +42,8 @@ openDocument = ->
       console.log op
       if (path.length is 2) and (path[1] is 'finished')
         $('#items input').eq(path[0]).prop('checked', op.oi)
+      if (path.length is 2) and (path[1] is 'title')
+        $('#items .title').eq(path[0]).text(op.oi)
     itemsDoc.on 'insert', (pos, item) ->
       console.log('LIST ITEM INSERTED')
       updateSortable(appendListItem(item))
@@ -75,6 +77,38 @@ openDocument = ->
       checked = $this.prop('checked')
       index = $this.parent('li').index()
       itemsDoc.at([index, 'finished']).set(checked)
+
+    $editBox = $('<input type="text" />')
+        .appendTo($('body'))
+
+    hideEditBox = ->
+      $editBox.offset({top: 0, left: 0}).css({visibility: 'hidden'})
+
+    $editBox
+      .on 'keyup', (e) ->
+        if e.which is utils.keys.enter
+          newTitle = $editBox.val()
+          $title = $editBox.data('attachedTo')
+          $title.text(newTitle)
+          index = $title.parents('li').index()
+          itemsDoc.at([index, 'title']).set(newTitle)
+          hideEditBox()
+        if e.which is utils.keys.esc
+          hideEditBox()
+      .on 'blur', ->
+        hideEditBox()
+
+    hideEditBox()
+
+    $('#items').on 'click', '.title', () ->
+      $this = $(this)
+      $editBox
+        .data('attachedTo', $this)
+        .css({height: $this.height()})
+        .offset($this.offset())
+        .val($this.text())
+        .css({visibility: 'visible'})
+        .focus()
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
