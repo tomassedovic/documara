@@ -78,8 +78,7 @@ openDocument = ->
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
-  desc = (_.range(Math.floor(Math.random() * 10)).map (n) -> 'wordy').join(' ')
-  item = _.extend({id: this.uniqueIdCounter, description: desc}, item)
+  item = _.extend({id: this.uniqueIdCounter}, item)
   $el = $(renderListItem(item))
   $("#items").append($el)
   return $el
