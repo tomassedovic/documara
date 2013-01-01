@@ -28,6 +28,8 @@ openDocument = ->
     _.each itemsDoc.get(), (item) ->
       appendListItem(item)
 
+    updateSortable = utils.listSortable $('#items'), (from, to) ->
+      itemsDoc.move(from, to)
 
     # TODO: remove all the listeners on disconnect
     doc.at().on 'child op', (path, op) ->
@@ -42,13 +44,18 @@ openDocument = ->
         $('#items input').eq(path[0]).prop('checked', op.oi)
     itemsDoc.on 'insert', (pos, item) ->
       console.log('LIST ITEM INSERTED')
-      appendListItem(item)
+      updateSortable(appendListItem(item))
     itemsDoc.on 'replace', (pos, was, now) ->
       console.log("LIST ITEM CHANGED")
       console.log(pos, was, now)
     itemsDoc.on 'move', (from, to) ->
-      console.log('LIST ITEM MOVED')
-      console.log(from, to)
+      $items = $('#items li')
+      $el = $items.eq(from)
+      $target = $items.eq(to)
+      if from > to
+        $el.insertBefore($target)
+      else
+        $el.insertAfter($target)
     itemsDoc.on 'delete', (pos, removedData) ->
       console.log('LIST ITEM DELETED')
       console.log(pos, removedData)
@@ -75,10 +82,7 @@ appendListItem = (item) ->
   item = _.extend({id: this.uniqueIdCounter, description: desc}, item)
   $el = $(renderListItem(item))
   $("#items").append($el)
-  makeListSortable($el)
-  # $el.find('.title').on 'click', (e) ->
-  #   # TODO: show an edit textbox instead
-  #   $(this).css({background: 'blue'})
+  return $el
 
 
 setupUI = ->
