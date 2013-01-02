@@ -119,14 +119,11 @@
            <% if(d.finished) { %> checked="checked" <% } %> />
     <label for="item-<%- d.id %>">done</label>
     <span class="title"><%- d.title %></span>
-    <% if(d.description && d.description.length > 0) { %>
-      <div class="description">
-        <%- d.description %>
-      </div>
-    <% } else { %>
+    <% if(!(d.description && d.description.length > 0)) { %>
       <a class="add-description" href="#">add description</a>
     <% } %>
     <a class="remove-item" href="#">remove</a>
+    <pre class="description"><% if(d.description && d.description.length > 0) { %><%- d.description %><% } %></pre>
   </li>
 </script>
 

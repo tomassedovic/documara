@@ -44,6 +44,8 @@ openDocument = ->
         $('#items input').eq(path[0]).prop('checked', op.oi)
       if (path.length is 2) and (path[1] is 'title')
         $('#items .title').eq(path[0]).text(op.oi)
+      if (path.length is 2) and (path[1] is 'description')
+        $('#items .description').eq(path[0]).text(op.oi)
     itemsDoc.on 'insert', (pos, item) ->
       console.log('LIST ITEM INSERTED')
       updateSortable(appendListItem(item))
@@ -81,21 +83,25 @@ openDocument = ->
     hideEditBox = ->
       $editBox.offset({top: 0, left: 0}).css({visibility: 'hidden'})
 
+    updateTitle = ->
+      newTitle = $editBox.val()
+      $title = $editBox.data('attachedTo')
+      $title.text(newTitle)
+      index = $title.parents('li').index()
+      itemsDoc.at([index, 'title']).set(newTitle)
+      hideEditBox()
+
     $editBox
       .on 'keyup', (e) ->
         if e.which is utils.keys.enter
-          newTitle = $editBox.val()
-          $title = $editBox.data('attachedTo')
-          $title.text(newTitle)
-          index = $title.parents('li').index()
-          itemsDoc.at([index, 'title']).set(newTitle)
-          hideEditBox()
+          updateTitle()
         if e.which is utils.keys.esc
           hideEditBox()
       .on 'blur', ->
-        hideEditBox()
+        updateTitle()
 
     hideEditBox()
+
 
     $('#items').on 'click', '.title', () ->
       $this = $(this)
@@ -107,6 +113,7 @@ openDocument = ->
         .css({visibility: 'visible'})
         .focus()
 
+
     $('#items').on 'click', '.remove-item', ->
       index = $(this).parents('li').index()
       $goner = $('#items li').eq(index)
@@ -115,6 +122,57 @@ openDocument = ->
       $goner.fadeOut 300, () ->
         itemsDoc.at([index]).remove()
         $goner.remove()
+
+    $descriptionEditBox = $('<textarea />')
+      .appendTo($('body'))
+      .width(300)
+      .height(100)
+      .css({visibility: 'hidden'})
+
+    hideDescriptionEditBox = ->
+      $descriptionEditBox
+        .offset({top: 0, left: 0})
+        .css({visibility: 'hidden'})
+      $li = $descriptionEditBox.data('attachedTo')
+      descriptionHeight = $li.find('.description').height()
+      $li.animate({height: $li.find('.title').height() + descriptionHeight}, 100)
+
+
+    showDescriptionEditBox = ($li) ->
+      offset = $li.find('.description').offset()
+      originalHeight = $li.height()
+      boxHeight = $descriptionEditBox.height()
+      $li.animate {height: $li.find('.title').height() + boxHeight + 5}, 100, ->
+        $descriptionEditBox
+          .data('attachedTo', $li)
+          .offset(offset)
+          .val($li.find('.description').text().trim())
+          .css({visibility: 'visible'})
+          .focus()
+
+    $('#items').on 'click', '.add-description', ->
+      showDescriptionEditBox($(this).parents('li'))
+
+    $('#items').on 'click', '.description', ->
+      showDescriptionEditBox($(this).parents('li'))
+
+    updateDescription = ->
+        newDescription = $descriptionEditBox.val()
+        $li = $descriptionEditBox.data('attachedTo')
+        originalDescription = $li.find('.description').text()
+        if newDescription isnt originalDescription
+          $li.find('.description').text(newDescription)
+          itemsDoc.at([$li.index(), 'description']).set(newDescription)
+        hideDescriptionEditBox()
+
+    $descriptionEditBox
+      .on 'keyup', (e) ->
+        if e.which is utils.keys.esc
+          hideDescriptionEditBox()
+        if e.ctrlKey and (e.which is utils.keys.enter)
+          updateDescription()
+      .on 'blur', ->
+        updateDescription()
 
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
