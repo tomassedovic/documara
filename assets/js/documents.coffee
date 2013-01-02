@@ -47,7 +47,7 @@ openDocument = ->
 setupUI = ->
   unless documentId()
     utils.showPage "document-index"
-    $.ajax "/api/documents/",
+    $.ajax "/api/documents/?type=text",
       success: (docs) ->
         $documents = $("#documents")
         docs = _.filter docs, (doc) ->

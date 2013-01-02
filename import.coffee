@@ -23,7 +23,7 @@ migrateDocument = (row, callback) ->
   doc.last_modified = format_date(doc.lastModified or doc.created)
   if doc.published
     doc.published = format_date(doc.published)
-  doc = u_.pick doc, 'title', 'body', 'slug', 'created', 'last_modified', 'published'
+  doc = u_.pick doc, 'title', 'body', 'slug', 'created', 'last_modified', 'published', 'type'
   console.log "#{doc.created}, #{doc.last_modified}, #{doc.published}, #{doc.slug}"
 
   db.createDocument user, doc, (err, doc_id) ->

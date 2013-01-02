@@ -13,11 +13,6 @@ Features & Issues
 * Have a look whether it makes more sense to abandon jQuery UI entirely and use
    jQuery's Drag & Drop functionality directly for listSortable.
 
-* Add filtering by document type into the Documara API
-  - e.g. GET /api/documents?type=lists
-  - Expect "type=text" when no type provided
-  - Return all documents of all types on "type=all"
-
 * speed up the document search
 
 * speed up the document-index loading time

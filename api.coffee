@@ -85,6 +85,15 @@ exports.attach = (server, db) ->
     catch err
       return sendJSON res, { error: err.message}, 400
 
+    filter.type = req.query.type
+    filter.type = 'text' if us.isEmpty(filter.type)
+
+    matchesType = (doc) ->
+      allDocs = filter.type is 'all'
+      defaultTextMatch = (filter.type is 'text') and us.isEmpty(doc.type)
+      typeMatch = doc.type is filter.type
+      return allDocs or defaultTextMatch or typeMatch
+
     db.documents req.session.user.email, filter, (err, docs) ->
       if err
         return sendJSON res, { error: err }, 500
@@ -98,9 +107,10 @@ exports.attach = (server, db) ->
           result.id = doc_id
           result.author = req.session.user.email
           return callback err, result
-      , (err, result) ->
+      , (err, docs) ->
         if err
           return sendJSON res, { error: err }, 500
+        result = us.filter(docs, matchesType)
         return sendJSON res, result, 200
 
 

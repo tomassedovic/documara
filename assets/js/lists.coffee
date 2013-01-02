@@ -196,9 +196,8 @@ appendListItem = (item) ->
 setupUI = ->
   unless documentId()
     utils.showPage "list-page"
-    $.ajax "/api/documents/",
+    $.ajax "/api/documents/?type=list",
       success: (docs) ->
-        docs = _.filter docs, (doc) -> doc.type is 'list'
         $allLists = $('#all-docs')
         _.each docs, (doc) ->
           doc.selected = if (doc.id is documentId())
