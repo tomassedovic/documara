@@ -1,9 +1,5 @@
 Features & Issues
 
-* Gracefully handle disconnection
-   Currenty just close the connection, show an error and don't reconnect. A
-   proper recovery will be more tricky.
-
 * Generate more numbers as the document IDs (this makes it easier to
    manipulate the URL since the ID is treated as a single word)
 

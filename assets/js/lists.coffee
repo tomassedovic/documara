@@ -21,6 +21,17 @@ openDocument = ->
       return
 
     console.log(doc)
+    doc.connection.on 'error', (e) ->
+      console.log "CONNECTION ERROR, closing the document...", e
+      $('#items li').slideUp()
+      $('#items').append $("<p>Lost connection to the server.</p>").css({color: 'red'})
+      $('<a href="#">I understand, now show my items again.</a>')
+        .on 'click', ->
+          $('#items li').slideDown()
+          $(this).remove()
+        .appendTo $('#items')
+      doc.close()
+
     utils.attachTextbox doc.at('title'), $('#list-title')
 
     itemsDoc = doc.at('items')
