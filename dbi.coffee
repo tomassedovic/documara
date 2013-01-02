@@ -68,12 +68,17 @@ dbi = (con, model) ->
 
     createDocument: (owner_login, doc, callback) ->
       callback = (() ->) unless callback?
+
+      newDocId = () ->
+        bytes = crypto.randomBytes(3)
+        return (bytes[0] + (256 * bytes[1]) + (256 * 256 * bytes[2])).toString()
+
       @findUserIdFromLogin owner_login, (err, user_id) ->
         if err
           return callback err, null
         unless user_id
           return callback { error: 'unknown user' }, null
-        doc_id = crypto.randomBytes(4).toString('hex')
+        doc_id = newDocId()
         current_time = (new XDate(true))
         if u_.isEmpty doc
           doc = {}

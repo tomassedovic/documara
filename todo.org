@@ -1,8 +1,5 @@
 Features & Issues
 
-* Generate more numbers as the document IDs (this makes it easier to
-   manipulate the URL since the ID is treated as a single word)
-
 * Change "add description" to "change description" when it already exists
 
 * Make sure the "add/change description" buttons are there both on page load
