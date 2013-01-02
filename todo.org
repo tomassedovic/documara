@@ -1,20 +1,33 @@
-* Features & Issues
-** Make the lists pretty
-** Add list deletion
-** Undo for deletion
+Features & Issues
 
-** Generate more sensible document IDs -- either numbers or alphabetic
-   characters only (this makes it easier to manipulate the URL since the ID is
-   treated as a single word)
+* Gracefully handle disconnection
+   Currenty just close the connection, show an error and don't reconnect. A
+   proper recovery will be more tricky.
 
-** Have a look whether it makes more sense to abandon jQuery UI entirely and use
+* Generate more numbers as the document IDs (this makes it easier to
+   manipulate the URL since the ID is treated as a single word)
+
+* Change "add description" to "change description" when it already exists
+
+* Make sure the "add/change description" buttons are there both on page load
+   and when we add the description later.
+
+* Make the lists pretty
+* Add list deletion
+* Undo for deletion
+
+
+* Have a look whether it makes more sense to abandon jQuery UI entirely and use
    jQuery's Drag & Drop functionality directly for listSortable.
 
-** Add filtering by document type into the Documara API
-*** GET /api/documents?type=lists
+* Add filtering by document type into the Documara API
+  - e.g. GET /api/documents?type=lists
+  - Expect "type=text" when no type provided
+  - Return all documents of all types on "type=all"
 
-** speed up the document search
-** speed up the document-index loading time
+* speed up the document search
+
+* speed up the document-index loading time
    If the client supports localStorage, we can use it to store the list of
    documents and just load the new stuff.
 
@@ -24,12 +37,15 @@
    after that.
 
    Redis' command `ZRANGEBYSCORE` allows us to do that for the sorted sets.
-** Change the colour theme
+
+* Change the colour theme
    The background and foreground colours were taken from notepad.cc because it
    was quick and I wanted something that looks good for my prototyping and
    testing.
 
    This must be replaced with a colour theme that I have undisputable right to
    use and distribute.
-** Add Offline mode
-** Allow document deletion
+
+* Add Offline mode
+
+* Allow document deletion
