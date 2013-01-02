@@ -8,6 +8,21 @@ exports.isSessionLoggedIn = isSessionLoggedIn = (session) ->
 
 exports.attach = (server, db) ->
 
+  requireLoggedIn = (req, res, next) ->
+    if isSessionLoggedIn(req.session)
+      return next()
+
+    [email, password] = getBasicAuthCredentials(req)
+    unless email and password
+      return next(new MustBeLoggedInError)
+
+    db.validCredentials email, password, (err, valid) ->
+      if valid
+        req.session.user = { email: email }
+        return next()
+      else
+        return next(new InvalidCredentialsError)
+
   server.use (err, req, res, next) ->
     if err instanceof MustBeLoggedInError
       sendJSON res, {"error": "you must be logged in"}, 401
@@ -109,24 +124,9 @@ sendJSON = (res, data, code) ->
 MustBeLoggedInError = (() ->)
 InvalidCredentialsError = (() ->)
 
-requireLoggedIn = (req, res, next) ->
-  if isSessionLoggedIn(req.session)
-    return next()
-
-  [email, password] = getBasicAuthCredentials(req)
-  unless email and password
-    return next(new MustBeLoggedInError)
-
-  db.validCredentials email, password, (err, valid) ->
-    if valid
-      req.session.user = { email: email }
-      return next()
-    else
-      return next(new InvalidCredentialsError)
-
 getBasicAuthCredentials = (req) ->
   basic_auth = req.headers['authorization']
-  if basic_auth? and not u_.isEmpty(basic_auth)
+  if basic_auth? and not us.isEmpty(basic_auth)
     decoded = (new Buffer(basic_auth.split(' ')[1], 'base64')).toString('ascii')
     i = decoded.indexOf(':')
     return [decoded.slice(0, i), decoded.slice(i + 1)]
