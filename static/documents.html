@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Documara</title>
   <link rel="stylesheet" href="/style/bootstrap.min.css" />
-  <link rel="stylesheet" href="/style/bootstrap-responsive.min..css" />
-  <link rel="stylesheet" href="/style/documents.css" />
-  <link rel="stylesheet" href="/style/lists.css" />
+  <link rel="stylesheet" href="/style/bootstrap-responsive.min.css" />
+  <!-- <link rel="stylesheet" href="/style/documents.css" /> -->
+  <!-- <link rel="stylesheet" href="/style/lists.css" /> -->
 </head> <body>
 
 
@@ -19,6 +19,17 @@
     <input type="submit" name="submit" value="Log me in"></input>
   </form>
 </section>
+
+
+<div id="user-info">
+  Section
+  <a href="/documents/">Documents</a>
+  <a href="/lists/">Lists</a>
+  <span class="username">Anonymous</span>
+  <form id="logout-form" action="/logout" method="POST">
+    <input type="submit" value="Logout"></input>
+  </form>
+</div>
 
 
 <section id="document-show">
@@ -64,17 +75,6 @@
   </div>
 </section>
 
-<div id="user-info">
-  Section
-  <a href="/documents/">Documents</a>
-  <a href="/lists/">Lists</a>
-  <span class="username">Anonymous</span>
-  <form id="logout-form" action="/logout" method="POST">
-    <input type="submit" value="Logout"></input>
-  </form>
-</div>
-
-
 
 <section id="list-page">
   <nav id="all-docs">
@@ -104,7 +104,6 @@
     </div>
   </div>
 </section>
-
 
 
 <!-- Templates -->

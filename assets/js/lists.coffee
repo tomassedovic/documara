@@ -185,6 +185,7 @@ openDocument = ->
       .on 'blur', ->
         updateDescription()
 
+
 appendListItem = (item) ->
   this.uniqueIdCounter = (this.uniqueIdCounter ? 0) + 1
   item = _.extend({id: this.uniqueIdCounter}, item)
@@ -194,10 +195,13 @@ appendListItem = (item) ->
 
 
 setupUI = ->
-  unless documentId()
+  if documentId()
     utils.showPage "list-page"
+    openDocument()
+  else
     $.ajax "/api/documents/?type=list",
       success: (docs) ->
+        utils.showPage "list-page"
         $allLists = $('#all-docs')
         _.each docs, (doc) ->
           doc.selected = if (doc.id is documentId())
@@ -208,8 +212,6 @@ setupUI = ->
       statusCode:
         401: ->
           utils.showPage "login"
-    return
-  openDocument()
 
 
 $("#login form").live "submit", ->
