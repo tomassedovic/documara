@@ -195,23 +195,21 @@ appendListItem = (item) ->
 
 
 setupUI = ->
-  if documentId()
-    utils.showPage "list-page"
-    openDocument()
-  else
-    $.ajax "/api/documents/?type=list",
-      success: (docs) ->
-        utils.showPage "list-page"
-        $allLists = $('#all-docs')
-        _.each docs, (doc) ->
-          doc.selected = if (doc.id is documentId())
-            'selected'
-          else
-            ''
-          $allLists.append renderListLink(doc)
-      statusCode:
-        401: ->
-          utils.showPage "login"
+  $.ajax "/api/documents/?type=list",
+    success: (docs) ->
+      utils.showPage "list-page"
+      $allLists = $('#all-docs ul')
+      docs = _.sortBy docs, (d) -> d.title
+      _.each docs, (doc) ->
+        doc.selected = if (doc.id is documentId())
+          'active'
+        else
+          ''
+        $allLists.append renderListLink(doc)
+      openDocument() if documentId()
+    statusCode:
+      401: ->
+        utils.showPage "login"
 
 
 $("#login form").live "submit", ->

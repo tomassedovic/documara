@@ -21,15 +21,20 @@
 </section>
 
 
-<div id="user-info">
-  Section
-  <a href="/documents/">Documents</a>
-  <a href="/lists/">Lists</a>
-  <span class="username">Anonymous</span>
-  <form id="logout-form" action="/logout" method="POST">
-    <input type="submit" value="Logout"></input>
-  </form>
-</div>
+<div id="user-info" class="navbar"><div class="navbar-inner">
+  <a class="brand" href="/">Documara</a>
+  <ul class="nav">
+    <li><a href="/documents/">Documents</a></li>
+    <li><a href="/lists/">Lists</a></li>
+  </ul>
+  <ul class="nav pull-right">
+    <li><span class="username navbar-text">Anonymous</span></li>
+    <li class="divider-vertical"></li>
+    <li><form id="logout-form" class="navbar-form" action="/logout" method="POST">
+        <input type="submit" class="btn" value="Logout"></input>
+    </form></li>
+  </ul>
+</div></div>
 
 
 <section id="document-show">
@@ -61,13 +66,13 @@
 </section>
 
 
-<section id="document-index">
+<section id="document-index" class="container">
   <div id="searchbox-wrapper">
     <input id="searchbox" type="text" name="searchbox"
            placeholder="Type new or existing document title" />
   </div>
   <div id="documents-container">
-    <ul id="documents">
+    <ul id="documents" class="unstyled">
       <li id="new-document">
         <a href=""><h3></h3><em>Create a new document</em></a>
       </li>
@@ -76,18 +81,24 @@
 </section>
 
 
-<section id="list-page">
+<section id="list-page" class="container-fluid"><div class="row-fluid">
+<div class="span3">
+
   <nav id="all-docs">
-    <ul> </ul>
-    <button id="create-new-list" type="button">Create a new list</button>
+    <ul class="nav nav-list">
+      <li class="nav-header">Your lists:</li>
+    </ul>
+    <button id="create-new-list" type="button" class="btn btn-block">Create a new list</button>
   </nav>
 
+</div><div class="span9">
+
   <div id="document-area">
-    <input id="list-title" type="text" placeholder="Your list title" />
+    <input id="list-title" class="input-block-level" type="text" placeholder="Your list title" />
 
     <p class="empty">The list is empty. Try adding some items!</p>
     <div id="wrap">
-    <ul id="items">
+    <ul id="items" class="unstyled">
     </ul>
     </div>
 
@@ -103,7 +114,9 @@
       </button>
     </div>
   </div>
-</section>
+
+</div>
+</div></section>
 
 
 <!-- Templates -->
