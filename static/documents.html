@@ -129,6 +129,8 @@
   <li>
     <button type="button" class="finished btn btn-small <% if(d.finished) print('active'); %>" data-toggle="button">done</button>
     <span class="title"><%- d.title %></span>
+    <button type="button" class="remove-item">Remove Item</button>
+    <button type="button" class="add-description">Add Description</button>
     <pre class="description <% if(!d.description || d.description.length === 0) print('hidden'); %>"><% if(d.description && d.description.length > 0) { %><%- d.description %><% } %></pre>
   </li>
 </script>

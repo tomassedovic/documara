@@ -44,11 +44,17 @@ li:hover .remove-item {
 
 .hidden { display: none; }
 
-#action-buttons {
+.add-description, .remove-item {
   display: none;
+  border-style: none;
+  background: transparent;
+  text-decoration: underline;
+  color: blue;
   float: right;
 }
-li:hover #action-buttons { display: inline; }
+.remove-item { color: red; }
+
+li:hover .add-description, li:hover .remove-item { display: inline; }
 
 #hide-finished {
   margin-bottom: 50px;

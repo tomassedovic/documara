@@ -157,36 +157,8 @@ openDocument = ->
         .css({visibility: 'visible'})
         .focus()
 
-    buttonCSS =
-        'border-style': 'none'
-        'background': 'transparent'
-        'text-decoration': 'underline'
-        'display': 'inline'
-        'color': 'blue'
-
-    $addDescription = $('<button type="button">Add Description</button>')
-      .css(buttonCSS)
-      .on 'click', ->
-        showDescriptionEditBox($(this).parents('li'))
-
-    $removeItem = $('<button type="button">Remove Item</button>')
-      .css(_.extend({}, buttonCSS, {color: 'red'}))
-      .on 'click', ->
-        index = $(this).parents('li').index()
-        $goner = $('#items li').eq(index)
-        # I normally prefer faster animations, but this is a destructive operation
-        # It's better to let the user know what's happening.
-        $goner.fadeOut 300, () ->
-          itemsDoc.at([index]).remove()
-          $goner.remove()
-
-    $actionButtons = $('<span id="action-buttons" />')
-      .append($addDescription)
-      .append($removeItem)
-      .appendTo('body')
-
-    $('#items').on 'mouseenter', 'li:not(.drag-helper)', ->
-      $actionButtons.insertAfter($(this).find('.title'))
+    $('#items').on 'click', '.add-description', ->
+      showDescriptionEditBox($(this).parents('li'))
 
     $('#items').on 'click', '.description', ->
       showDescriptionEditBox($(this).parents('li'))
@@ -208,6 +180,15 @@ openDocument = ->
           updateDescription()
       .on 'blur', ->
         updateDescription()
+
+    $('#items').on 'click', '.remove-item', ->
+      index = $(this).parents('li').index()
+      $goner = $('#items li').eq(index)
+      # I normally prefer faster animations, but this is a destructive operation
+      # It's better to let the user know what's happening.
+      $goner.fadeOut 300, () ->
+        itemsDoc.at([index]).remove()
+        $goner.remove()
 
 
 appendListItem = (item) ->
