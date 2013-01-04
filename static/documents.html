@@ -94,27 +94,23 @@
 </div><div class="span9">
 
   <div id="document-area">
-    <input id="list-title" class="input-block-level" type="text" placeholder="Your list title" />
+    <input id="list-title" type="text" placeholder="Your list title" />
 
     <p class="empty">The list is empty. Try adding some items!</p>
-    <div id="wrap">
     <ul id="items" class="unstyled">
     </ul>
-    </div>
+    <button id="hide-finished" type="button"
+            data-text-hide-finished="Hide finished"
+            data-text-show-all="Show all items"
+            class="btn">
+      Hide finished
+    </button>
 
     <div class="input-append">
-      <input id="new-item" class="input-xlarge" type="text" />
+      <input id="new-item" class="input-xlarge" type="text" placeholder="new list item" />
       <button id="add-item" type="button" class="btn">Add</button>
     </div>
 
-    <div>
-      <button id="hide-finished" type="button"
-              data-text-hide-finished="Hide finished"
-              data-text-show-all="Show all items"
-              class="btn">
-        Hide finished
-      </button>
-    </div>
   </div>
 
 </div>

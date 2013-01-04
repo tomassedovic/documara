@@ -96,11 +96,13 @@ self.listSortable = listSortable = ($list, itemMovedCallback) ->
 
   draggedHelper = () ->
     $dragged = $(this)
-    $dragged.clone().css({
-      width: "#{$dragged.width()}px"
-      height: "#{$dragged.height()}px"
-      background: "white"
-    })
+    $helper = $dragged.clone()
+      .addClass('drag-helper')
+      .css({
+        width: "#{$dragged.width()}px"
+        height: "#{$dragged.height()}px"
+      })
+    return $helper
 
   listItemAdded = ($li) ->
     options =

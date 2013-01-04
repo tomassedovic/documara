@@ -180,17 +180,13 @@ openDocument = ->
           itemsDoc.at([index]).remove()
           $goner.remove()
 
-    $actionButtons = $('<span />')
+    $actionButtons = $('<span id="action-buttons" />')
       .append($addDescription)
       .append($removeItem)
+      .appendTo('body')
 
-    $('#items').on 'mouseenter', 'li', ->
-      $actionButtons
-        .show()
-        .css({'margin-left': '50px'})
-        .insertAfter($(this).find('.title'))
-    $('#items').on 'mouseleave', 'li', ->
-      $actionButtons.hide()
+    $('#items').on 'mouseenter', 'li:not(.drag-helper)', ->
+      $actionButtons.insertAfter($(this).find('.title'))
 
     $('#items').on 'click', '.description', ->
       showDescriptionEditBox($(this).parents('li'))
