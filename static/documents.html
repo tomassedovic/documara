@@ -135,7 +135,7 @@
       <a class="add-description" href="#">add description</a>
     <% } %>
     <a class="remove-item" href="#">remove</a>
-    <pre class="description"><% if(d.description && d.description.length > 0) { %><%- d.description %><% } %></pre>
+    <pre class="description <% if(!d.description || d.description.length === 0) print('hidden'); %>"><% if(d.description && d.description.length > 0) { %><%- d.description %><% } %></pre>
   </li>
 </script>
 

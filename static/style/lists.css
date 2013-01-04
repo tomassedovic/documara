@@ -29,3 +29,5 @@ li:hover .remove-item {
 }*/
 
 .finished.active + .title { text-decoration: line-through; }
+
+.hidden { display: none; }
