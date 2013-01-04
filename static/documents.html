@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="/style/bootstrap.min.css" />
   <link rel="stylesheet" href="/style/bootstrap-responsive.min.css" />
   <!-- <link rel="stylesheet" href="/style/documents.css" /> -->
-  <!-- <link rel="stylesheet" href="/style/lists.css" /> -->
+  <link rel="stylesheet" href="/style/lists.css" />
 </head> <body>
 
 
@@ -129,9 +129,7 @@
 
 <script id="item-template" type="underscore-template">
   <li>
-    <input id="item-<%- d.id %>" type="checkbox"
-           <% if(d.finished) { %> checked="checked" <% } %> />
-    <label for="item-<%- d.id %>">done</label>
+    <button type="button" class="finished btn btn-small <% if(d.finished) print('active'); %>" data-toggle="button">done</button>
     <span class="title"><%- d.title %></span>
     <% if(!(d.description && d.description.length > 0)) { %>
       <a class="add-description" href="#">add description</a>

@@ -1,4 +1,4 @@
-#items {
+/*#items {
   width: 450px;
   padding: 2em;
 }
@@ -26,4 +26,6 @@
 li:hover .add-description,
 li:hover .remove-item {
   visibility: visible;
-}
+}*/
+
+.finished.active + .title { text-decoration: line-through; }

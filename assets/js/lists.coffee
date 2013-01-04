@@ -52,7 +52,7 @@ openDocument = ->
       console.log path
       console.log op
       if (path.length is 2) and (path[1] is 'finished')
-        $('#items input').eq(path[0]).prop('checked', op.oi)
+        $('#items .finished').eq(path[0]).toggleClass('active', op.oi)
       if (path.length is 2) and (path[1] is 'title')
         $('#items .title').eq(path[0]).text(op.oi)
       if (path.length is 2) and (path[1] is 'description')
@@ -82,11 +82,11 @@ openDocument = ->
       updateSortable(appendListItem(item))
       $('#new-item').val('')
 
-    $('#items input').live 'change', () ->
+    $('#items').on 'click', '.finished', () ->
       $this = $(this)
-      checked = $this.prop('checked')
+      finished = not $this.hasClass('active')
       index = $this.parent('li').index()
-      itemsDoc.at([index, 'finished']).set(checked)
+      itemsDoc.at([index, 'finished']).set(finished)
 
     $editBox = $('<input type="text" />')
         .appendTo($('body'))
@@ -256,7 +256,7 @@ $("#hide-finished").live 'click', () ->
     animate = ($el) -> $el.slideDown('fast')
     text = $button.data('text-hide-finished')
   $button.text(text)
-  animate($('#items input:checked').parent())
+  animate($('#items .finished.active').parent())
 
 $('#new-item').live 'keyup', (e) ->
   if e.which is utils.keys.enter
