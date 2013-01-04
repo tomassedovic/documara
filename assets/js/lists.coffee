@@ -134,10 +134,13 @@ openDocument = ->
         itemsDoc.at([index]).remove()
         $goner.remove()
 
+
+    defaultDescriptionHeight = 100
+
     $descriptionEditBox = $('<textarea />')
       .appendTo($('body'))
       .width(300)
-      .height(100)
+      .height(defaultDescriptionHeight)
       .css({visibility: 'hidden'})
 
     hideDescriptionEditBox = ->
@@ -145,21 +148,24 @@ openDocument = ->
         .offset({top: 0, left: 0})
         .css({visibility: 'hidden'})
       $li = $descriptionEditBox.data('attachedTo')
-      descriptionHeight = $li.find('.description').height()
-      $li.animate({height: $li.find('.title').height() + descriptionHeight}, 100)
+      $li.find('.description').addClass('hidden') if _.isEmpty($description.text().trim())
 
 
     showDescriptionEditBox = ($li) ->
-      offset = $li.find('.description').offset()
-      originalHeight = $li.height()
-      boxHeight = $descriptionEditBox.height()
-      $li.animate {height: $li.find('.title').height() + boxHeight + 5}, 100, ->
-        $descriptionEditBox
-          .data('attachedTo', $li)
-          .offset(offset)
-          .val($li.find('.description').text().trim())
-          .css({visibility: 'visible'})
-          .focus()
+      $description = $li.find('.description')
+      if $description.hasClass('hidden')
+        $description
+          .removeClass('hidden')
+          .height(defaultDescriptionHeight)
+
+      offset = $description.offset()
+      $descriptionEditBox
+        .data('attachedTo', $li)
+        .offset(offset)
+        .outerHeight($description.outerHeight())
+        .val($li.find('.description').text().trim())
+        .css({visibility: 'visible'})
+        .focus()
 
     $('#items').on 'click', '.add-description', ->
       showDescriptionEditBox($(this).parents('li'))
