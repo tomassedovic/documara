@@ -1,4 +1,0 @@
-{
-    "session_secret": "TODO: set this up to some random string",
-    "port": 8080
-}

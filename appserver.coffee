@@ -48,60 +48,42 @@ authenticateSharejs = (agent, action) ->
       if action.type in ['create', 'update', 'delete']
         documentChanged(action.type, session.user.email, action.docName)
 
-setupMiddleware = (app) ->
-  app.use connect.logger()
-  app.use connect.cookieParser()
-  app.use connect.session(sessionConfig)
-  app.use connect.bodyParser()
-
-
-
 
 app = express()
 
+session_secret = process.env.SESSION_SECRET ? require('crypto').randomBytes(20).toString('hex')
+port = process.env.PORT ? 8080
+serve_assets = app.get('env') is 'development'
+
 sessionConfig =
   key: 'sid'
+  secret: session_secret
   store: new RedisSessionStore
 
-switch app.get 'env'
-  when 'development'
-      console.log('Running in development mode')
+app.use connect.logger()
+app.use connect.cookieParser()
+app.use connect.session(sessionConfig)
+app.use connect.bodyParser()
 
-      sessionConfig.secret = 'my secret here'
-      setupMiddleware app
-      PORT = process.argv[2] or 8080
+if serve_assets
+  console.log('Running in development mode, serving static assets')
 
-      app.use connect.static("#{__dirname}/static")
-      app.use assets()
+  app.use connect.static("#{__dirname}/static")
+  app.use assets()
 
-      app.get '/', (req, res) ->
-        res.redirect '/documents/'
+  app.get '/', (req, res) ->
+    res.redirect '/documents/'
 
+  renderPage = (req, res) ->
+    js('utils')
+    js('documents')
+    js('lists')
+    res.sendfile __dirname + '/static/documents.html'
 
-      renderPage = (req, res) ->
-        js('utils')
-        js('documents')
-        js('lists')
-        res.sendfile __dirname + '/static/documents.html'
-
-      app.get '/documents/', renderPage
-      app.get '/documents/:id', renderPage
-      app.get '/lists/', renderPage
-      app.get '/lists/:id', renderPage
-
-  when 'production'
-      console.log('Running in production mode')
-
-      settings_path = "#{__dirname}/settings.json"
-      fs = require('fs')
-      s = fs.readFileSync(settings_path, 'utf-8')
-      settings = JSON.parse(s)
-
-      sessionConfig.secret = settings.session_secret
-      setupMiddleware app
-      PORT = settings.port
-  else
-    console.error "Unknown environment: '#{app.get('env')}'"
+  app.get '/documents/', renderPage
+  app.get '/documents/:id', renderPage
+  app.get '/lists/', renderPage
+  app.get '/lists/:id', renderPage
 
 
 sharejsOptions =
@@ -113,5 +95,10 @@ sharejs.attach app, sharejsOptions
 db = dbi.connect app.model
 api.attach(app, db)
 
-app.listen PORT
-console.log "Server running at port #{PORT}"
+
+# If we're run by `coffee --watch`, close the current server before listening
+# on port
+process.documara_server.close() if process.documara_server?.close?
+
+process.documara_server = app.listen port
+console.log "Server running at port #{port}"
