@@ -37,32 +37,28 @@
 </div></div>
 
 
-<section id="document-show">
-  <div id="title-wrapper">
-    <input type="text" id="title" placeholder="Document title"></input>
-  </div>
-  <div id="editor-wrapper">
-    <textarea id="editor" disabled="disabled">connecting...</textarea>
-  </div>
+<section id="document-show" class="container">
+  <input type="text" id="title" placeholder="Document title" class="input-block-level"></input>
+  <textarea id="editor" disabled="disabled" class="input-block-level">connecting...</textarea>
+
   <footer>
-    <form id="publish-form" action="/">
+    <form id="publish-form" class="form-inline" action="/">
       <p>
         <label for="published-date">Published on</label>
         <input type="text" id="published-date" placeholder="24 March 2012">
-        <button id="set-current-time" type="button">Now</button>
-        <button id="pick-date" type="button" disabled="disabled">Pick a date</button>
+        <button id="set-current-time" type="button" class="btn">Now</button>
+        <button id="pick-date" type="button" class="btn" disabled="disabled">Pick a date</button>
       </p>
       <p>
         <label for="slug">http://documara.com/public/</label>
         <input type="text" id="slug" placeholder="my-new-post">
+        <button id="publish" type="button" class="btn btn-primary">Make public!</button>
       </p>
-      <button id="publish" type="button">Make public!</button>
     </form>
     <div id="publication-info">
       <a href="">Published on <time></time></a>
     </div>
   </footer>
-  <a id="back-to-index" href="/">&lt;&lt; all documents</a>
 </section>
 
 
