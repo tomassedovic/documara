@@ -4,8 +4,7 @@
   <title>Documara</title>
   <link rel="stylesheet" href="/style/bootstrap.min.css" />
   <link rel="stylesheet" href="/style/bootstrap-responsive.min.css" />
-  <link rel="stylesheet" href="/style/documents.css" />
-  <link rel="stylesheet" href="/style/lists.css" />
+  <link rel="stylesheet" href="/style/style.css" />
 </head> <body>
 
 
@@ -25,14 +24,14 @@
 </div></div>
 
 
-<section id="login">
+<section id="login" class="container">
   <form action="/login" method="post">
     <h2>Please log in</h2>
     <div class="alert" style="display: none; color: red">Invalid email or password.</div>
-    <input type="email" name="email" id="email" placeholder="Email"></input>
-    <input type="password" name="password" id="password"
+    <input type="email" class="input-block-level" name="email" id="email" placeholder="Email"></input>
+    <input type="password" class="input-block-level" name="password" id="password"
            placeholder="Password"></input>
-    <input type="submit" name="submit" value="Log me in"></input>
+    <input type="submit" name="submit" class="btn btn-primary btn-large btn-block" value="Log me in"></input>
   </form>
 </section>
 

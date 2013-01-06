@@ -1,3 +1,6 @@
+body { background: #ebeef2; }
+
+
 #document-index {
   max-width: 800px;
 }
@@ -86,4 +89,42 @@
   display: block;
   max-width: 800px;
   margin: auto;
+}
+
+
+
+
+#items { width: 450px; }
+#list-title { width: 450px;}
+
+
+#items li:hover { background: white; }
+#items li:hover .description { background: white; }
+#items li.drag-helper { background: white; }
+#items li.drag-helper .description { background: white; }
+
+
+#items .finished.active + .title { text-decoration: line-through; }
+
+#items .add-description, #items .remove-item {
+  display: none;
+  border-style: none;
+  background: transparent;
+  font-size: small;
+  text-decoration: underline;
+  color: blue;
+  float: right;
+}
+#items .remove-item { color: red; }
+
+#items li:hover .add-description, li:hover .remove-item { display: inline; }
+
+#hide-finished {
+  margin-bottom: 50px;
+}
+
+
+#login { max-width: 250px;}
+#login input {
+  display: block;
 }
