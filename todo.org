@@ -6,8 +6,6 @@ Features & Issues
 
 * Undo for list and item deletion
 
-* Prevent the flash of unstyled content
-
 * Have a look whether it makes more sense to abandon jQuery UI entirely and use
    jQuery's Drag & Drop functionality directly for listSortable.
 

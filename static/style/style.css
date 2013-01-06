@@ -1,4 +1,7 @@
-body { background: #ebeef2; }
+body {
+  background: #ebeef2;
+  visibility: hidden;
+}
 
 
 #document-index {

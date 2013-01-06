@@ -31,11 +31,13 @@ self.toHumanDate = toHumanDate = (date) ->
   date.toString('d MMMM yyyy')
 
 self.showPage = showPage = (id) ->
+  $('body').css({visibility: 'hidden'})
   $("#sections li").removeClass('active')
   $("#sections a[rel='#{currentSection()}']").parent('li').addClass('active')
   $("section").hide()
   console.log "showing page #" + id
   $("section#" + id).show()
+  $('body').css({visibility: 'visible'})
   $.getJSON "/login", (data) ->
     name = data and (data.name or data.email)
     if name
