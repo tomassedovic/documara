@@ -86,6 +86,9 @@ $("#searchbox").live "keyup", (e) ->
     $("#documents li:visible:first a").click()
     return
 
+  if e.which is utils.keys.esc
+    $(this).val('')
+
   if e.which is utils.keys.down_arrow
     e.preventDefault()
     $("#documents li:visible:first a").addClass("focus", true).focus()
