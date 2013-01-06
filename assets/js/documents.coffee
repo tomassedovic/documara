@@ -65,7 +65,7 @@ setupUI = ->
         $documents = $("#documents")
         jQuery.each docs, (index, doc) ->
           $li = $("<li />")
-          doc.human_time = (new XDate(doc.created)).toLocaleDateString()
+          doc.human_time = utils.toHumanDate(new XDate(doc.created))
           $li.html $(renderDocumentListItem(doc))
           $documents.append $li
         $("#searchbox").select()
@@ -118,7 +118,7 @@ $("#documents li a").live "focusout", (e) ->
   $(this).removeClass "selected"
 
 $('#set-current-time').live 'click', () ->
-  $('#published-date').val (new XDate).toString('d MMMM yyyy')
+  $('#published-date').val utils.toHumanDate(new XDate)
 
 $('#new-document').live 'click', (e) ->
   e.preventDefault()
@@ -146,7 +146,7 @@ renderFooter = (snapshot) ->
     $info.show()
     date = (new XDate(snapshot.published))
     $info.find('a').attr('href', "/public/#{date.toString('yyyy-MM-dd')}/#{snapshot.slug}")
-    $info.find('time').text(date.toLocaleDateString())
+    $info.find('time').text(utils.toHumanDate(date))
   else
     $info.hide()
     $form.show()

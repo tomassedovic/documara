@@ -27,6 +27,9 @@ self.parseHumanDate = parseHumanDate = (s) ->
     return null
   return result
 
+self.toHumanDate = toHumanDate = (date) ->
+  date.toString('d MMMM yyyy')
+
 self.showPage = showPage = (id) ->
   $("#sections li").removeClass('active')
   $("#sections a[rel='#{currentSection()}']").parent('li').addClass('active')
