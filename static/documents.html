@@ -9,18 +9,6 @@
 </head> <body>
 
 
-<section id="login">
-  <form action="/login" method="post">
-    <h2>Please log in</h2>
-    <div class="alert" style="display: none; color: red">Invalid email or password.</div>
-    <input type="email" name="email" id="email" placeholder="Email"></input>
-    <input type="password" name="password" id="password"
-           placeholder="Password"></input>
-    <input type="submit" name="submit" value="Log me in"></input>
-  </form>
-</section>
-
-
 <div id="user-info" class="navbar"><div class="navbar-inner">
   <a class="brand" href="/">Documara</a>
   <ul class="nav">
@@ -35,6 +23,31 @@
     </form></li>
   </ul>
 </div></div>
+
+
+<section id="login">
+  <form action="/login" method="post">
+    <h2>Please log in</h2>
+    <div class="alert" style="display: none; color: red">Invalid email or password.</div>
+    <input type="email" name="email" id="email" placeholder="Email"></input>
+    <input type="password" name="password" id="password"
+           placeholder="Password"></input>
+    <input type="submit" name="submit" value="Log me in"></input>
+  </form>
+</section>
+
+
+<section id="document-index" class="container">
+  <input id="searchbox" type="text" name="searchbox" class="input-block-level"
+         placeholder="Type new or existing document title" />
+  <div id="documents-container">
+    <ul id="documents" class="unstyled">
+      <li id="new-document">
+        <a href=""><h3></h3><em>Create a new document</em></a>
+      </li>
+    </ul>
+  </div>
+</section>
 
 
 <section id="document-show" class="container">
@@ -61,18 +74,6 @@
   </footer>
 </section>
 
-
-<section id="document-index" class="container">
-  <input id="searchbox" type="text" name="searchbox" class="input-block-level"
-         placeholder="Type new or existing document title" />
-  <div id="documents-container">
-    <ul id="documents" class="unstyled">
-      <li id="new-document">
-        <a href=""><h3></h3><em>Create a new document</em></a>
-      </li>
-    </ul>
-  </div>
-</section>
 
 
 <section id="list-page" class="container-fluid"><div class="row-fluid">
