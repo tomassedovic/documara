@@ -23,13 +23,6 @@ exports.attach = (server, db) ->
       else
         return next(new InvalidCredentialsError)
 
-  server.use (err, req, res, next) ->
-    if err instanceof MustBeLoggedInError
-      sendJSON res, {"error": "you must be logged in"}, 401
-    else if err instanceof InvalidCredentialsError
-      sendJSON res, {"error": "invalid email or password"}, 401
-    else
-      next err
 
   server.get '/api/login', (req, res) ->
     sendJSON res, req.session.user or {}, 200
@@ -122,6 +115,14 @@ exports.attach = (server, db) ->
       doc.id = doc_id
       doc.author = req.session.user.email
       return sendJSON res, doc, 200
+
+  server.use (err, req, res, next) ->
+    if err instanceof MustBeLoggedInError
+      sendJSON res, {"error": "you must be logged in"}, 401
+    else if err instanceof InvalidCredentialsError
+      sendJSON res, {"error": "invalid email or password"}, 401
+    else
+      next err
 
 
 sendJSON = (res, data, code) ->
