@@ -207,6 +207,19 @@ appendListItem = (item) ->
 
 
 setupUI = ->
+  $("#login form").on "submit", ->
+    $form = $(this)
+    params = $form.serialize()
+    $.ajax
+      url: $form.attr("action")
+      type: "POST"
+      data: params
+      success: ->
+        setupUI()
+      error: ->
+        $form.find(".alert").show()
+    return false
+
   $.ajax "/api/documents/?type=list",
     success: (docs) ->
       utils.showPage "list-page"
@@ -227,20 +240,6 @@ setupUI = ->
 
 setElementsVisibility = ->
   $('#document-area').toggleClass('empty', $('#items li').length is 0)
-
-
-$("#login form").live "submit", ->
-  $form = $(this)
-  params = $form.serialize()
-  $.ajax
-    url: $form.attr("action")
-    type: "POST"
-    data: params
-    success: ->
-      setupUI()
-    error: ->
-      $form.find(".alert").show()
-  return false
 
 
 createNewList = () ->

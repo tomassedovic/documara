@@ -1,7 +1,5 @@
 Features & Issues
 
-* Lists are loaded on first login even though URL says /documents/
-
 * Change "add description" to "change description" when it already exists
 
 * Display the a human-friendlier date format in documents#index (5th June, 2012 instead of 05/06/2012)

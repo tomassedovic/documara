@@ -45,13 +45,24 @@ openDocument = ->
 
 
 setupUI = ->
+  $("#login form").on "submit", ->
+    $form = $(this)
+    params = $form.serialize()
+    $.ajax
+      url: $form.attr("action")
+      type: "POST"
+      data: params
+      success: ->
+        setupUI()
+      error: ->
+        $form.find(".alert").show()
+    return false
+
   unless documentId()
     utils.showPage "document-index"
     $.ajax "/api/documents/?type=text",
       success: (docs) ->
         $documents = $("#documents")
-        docs = _.filter docs, (doc) ->
-          doc.type isnt 'list'
         jQuery.each docs, (index, doc) ->
           $li = $("<li />")
           doc.human_time = (new XDate(doc.created)).toLocaleDateString()
@@ -64,19 +75,6 @@ setupUI = ->
     return
   openDocument()
 
-
-$("#login form").live "submit", ->
-  $form = $(this)
-  params = $form.serialize()
-  $.ajax
-    url: $form.attr("action")
-    type: "POST"
-    data: params
-    success: ->
-      setupUI()
-    error: ->
-      $form.find(".alert").show()
-  return false
 
 $("#searchbox").live "focusin", (e) ->
   setTimeout (-> $("#searchbox").select()), 10
