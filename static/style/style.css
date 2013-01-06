@@ -125,6 +125,11 @@ body { background: #ebeef2; }
 
 
 #login { max-width: 250px;}
+
 #login input {
   display: block;
+}
+
+#login .alert {
+  display: none;
 }
