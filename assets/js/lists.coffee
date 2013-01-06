@@ -73,6 +73,7 @@ openDocument = ->
         $el.insertAfter($target)
     itemsDoc.on 'delete', (pos, removedData) ->
       $('#items li').eq(pos).remove()
+      setElementsVisibility()
 
     $("#add-item").live 'click', () ->
       item =
@@ -196,6 +197,7 @@ appendListItem = (item) ->
   item = _.extend({id: this.uniqueIdCounter}, item)
   $el = $(renderListItem(item))
   $("#items").append($el)
+  setElementsVisibility()
   return $el
 
 
@@ -211,10 +213,15 @@ setupUI = ->
         else
           ''
         $allLists.append renderListLink(doc)
+      setElementsVisibility()
       openDocument() if documentId()
     statusCode:
       401: ->
         utils.showPage "login"
+
+
+setElementsVisibility = ->
+  $('#document-area').toggleClass('empty', $('#items li').length is 0)
 
 
 $("#login form").live "submit", ->

@@ -93,9 +93,11 @@ body { background: #ebeef2; }
 
 
 
+#list-page .alert { display: none;}
+#list-page .empty .alert { display: block;}
 
-#items { width: 450px; }
-#list-title { width: 450px;}
+#list-page ul, #list-page #hide-finished { display: block;}
+#list-page .empty ul, #list-page .empty #hide-finished { display: none;}
 
 
 #items li:hover { background: white; }

@@ -85,12 +85,13 @@
     <button id="create-new-list" type="button" class="btn btn-block">Create a new list</button>
   </nav>
 
-</div><div class="span9">
+</div><div class="span6">
 
   <div id="document-area">
-    <input id="list-title" type="text" placeholder="Your list title" />
+    <input id="list-title" type="text" class="input-block-level" placeholder="Your list title" />
 
-    <p class="empty">The list is empty. Try adding some items!</p>
+    <div class="alert alert-info">The list is empty. Try adding some items!
+        <button type="button" class="close" data-dismiss="alert">&times;</button></div>
     <ul id="items" class="unstyled">
     </ul>
     <button id="hide-finished" type="button"
