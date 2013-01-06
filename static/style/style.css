@@ -105,26 +105,16 @@ body { background: #ebeef2; }
 #items li.drag-helper { background: white; }
 #items li.drag-helper .description { background: white; }
 
-
 #items .finished.active + .title { text-decoration: line-through; }
 
-#items .add-description, #items .remove-item {
-  display: none;
-  border-style: none;
-  background: transparent;
-  font-size: small;
-  text-decoration: underline;
-  color: blue;
-  float: right;
-}
 #items .remove-item { color: red; }
 
-#items li:hover .add-description, li:hover .remove-item { display: inline; }
+#items .add-description, #items .remove-item { display: none; }
+#items li:hover .add-description, #items li:hover .remove-item { display: inline; }
 
 #hide-finished {
   margin-bottom: 50px;
 }
-
 
 #login { max-width: 250px;}
 

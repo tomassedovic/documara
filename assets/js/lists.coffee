@@ -130,7 +130,6 @@ openDocument = ->
 
     $descriptionEditBox = $('<textarea />')
       .appendTo($('body'))
-      .width(300)
       .height(defaultDescriptionHeight)
       .css({visibility: 'hidden'})
 
@@ -154,7 +153,13 @@ openDocument = ->
         .data('attachedTo', $li)
         .offset(offset)
         .outerHeight($description.outerHeight())
+        .width($description.width())
         .val($li.find('.description').text().trim())
+        .css({
+          'font': $description.css('font')
+          'padding': $description.css('padding')
+          'margin': $description.css('margin')
+        })
         .css({visibility: 'visible'})
         .focus()
 
