@@ -1,8 +1,12 @@
 Features & Issues
 
-* Fix the Documents#index and Documents#show layout under Bootstrap
+* Lists are loaded on first login even though URL says /documents/
+
+* Clear search on pressing Esc in Documents#index
 
 * Change "add description" to "change description" when it already exists
+
+* Display the a human-friendlier date format in documents#index (5th June, 2012 instead of 05/06/2012)
 
 * Add list deletion
 
