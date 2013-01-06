@@ -38,7 +38,7 @@ self.showPage = showPage = (id) ->
   console.log "showing page #" + id
   $("section#" + id).show()
   $('body').css({visibility: 'visible'})
-  $.getJSON "/login", (data) ->
+  $.getJSON "/api/login", (data) ->
     name = data and (data.name or data.email)
     if name
       $("#user-info .username").text name

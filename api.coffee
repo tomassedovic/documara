@@ -31,11 +31,11 @@ exports.attach = (server, db) ->
     else
       next err
 
-  server.get '/login', (req, res) ->
+  server.get '/api/login', (req, res) ->
     sendJSON res, req.session.user or {}, 200
 
 
-  server.post '/login', (req, res) ->
+  server.post '/api/login', (req, res) ->
     req.session.user = (req.session.user or {})
     email = req.body.email
     password = req.body.password
@@ -48,7 +48,7 @@ exports.attach = (server, db) ->
         sendJSON res, {"error": "invalid email or password"}, 401
 
 
-  server.post '/logout', (req, res) ->
+  server.post '/api/logout', (req, res) ->
     req.session.user = {}
     res.redirect '/'
 
