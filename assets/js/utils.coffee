@@ -28,7 +28,8 @@ self.parseHumanDate = parseHumanDate = (s) ->
   return result
 
 self.showPage = showPage = (id) ->
-  showPage = (id) ->
+  $("#sections li").removeClass('active')
+  $("#sections a[rel='#{currentSection()}']").parent('li').addClass('active')
   $("section").hide()
   console.log "showing page #" + id
   $("section#" + id).show()
