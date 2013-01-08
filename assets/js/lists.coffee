@@ -138,6 +138,7 @@ openDocument = ->
         .offset({top: 0, left: 0})
         .css({visibility: 'hidden'})
       $description = $descriptionEditBox.data('attachedTo').find('.description')
+      $description.height('')  # update the height to the contents
       $description.addClass('hidden') if _.isEmpty($description.text().trim())
 
 
