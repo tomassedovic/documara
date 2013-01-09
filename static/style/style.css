@@ -112,7 +112,23 @@ body {
 
 #items .remove-item { color: red; }
 
-#items .add-description, #items .remove-item { display: none; }
+li { position: relative; }
+#items .add-description {
+  display: none;
+  position: absolute;
+  right: 5px;
+  padding: 0 0 0 3px;
+  margin: 0;
+  background: white;
+}
+#items .remove-item {
+  display: none;
+  position: absolute;
+  right: -110px;
+  margin: 0;
+  padding: 0;
+}
+
 #items li:hover .add-description, #items li:hover .remove-item { display: inline; }
 
 #hide-finished {
