@@ -126,12 +126,12 @@ li { position: relative; }
 #items .remove-item {
   display: none;
   position: absolute;
-  right: -110px;
+  right: -100px;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 13px;
 }
 
-#items li:hover .add-description, #items li:hover .remove-item { display: inline; }
+#items li:hover .add-description, #items li:hover .remove-item, #items li .remove-item:hover { display: inline; }
 
 #hide-finished {
   margin-bottom: 50px;
