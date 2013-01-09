@@ -75,13 +75,15 @@ openDocument = ->
       $('#items li').eq(pos).remove()
       setElementsVisibility()
 
-    $("#add-item").live 'click', () ->
+    $("#add-item").on 'click', () ->
       item =
         title: $('#new-item').val()
+        description: $('#new-item-description').val().trim()
         finished: false
       itemsDoc.push(item)
       updateSortable(appendListItem(item))
-      $('#new-item').val('')
+      $('#new-item-description').val('')
+      $('#new-item').val('').focus()
 
     $('#items').on 'click', '.finished', () ->
       $this = $(this)

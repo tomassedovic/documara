@@ -112,6 +112,8 @@ body {
 
 #items .remove-item { color: red; }
 
+#new-item-description { height: 100px; width: 100%; }
+
 li { position: relative; }
 #items .add-description {
   display: none;
