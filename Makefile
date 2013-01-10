@@ -9,6 +9,7 @@ build: server static assets
 
 server: appserver.js api.js dbi.js
 	cp package.json $(OUTPUT_DIR)
+	cp README.md $(OUTPUT_DIR)
 	cp -r static $(OUTPUT_DIR)
 
 assets: $(ASSETS_DIR)/documents.js $(ASSETS_DIR)/lists.js $(ASSETS_DIR)/utils.js
