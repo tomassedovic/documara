@@ -225,9 +225,11 @@ setupUI = ->
 
   $.ajax "/api/documents/?type=list",
     success: (docs) ->
+      docs = _.sortBy docs, (d) -> d.title
+      if docs.length > 0 and _.isEmpty(documentId())
+        document.location = "/lists/#{_.first(docs).id}"
       utils.showPage "list-page"
       $allLists = $('#all-docs ul')
-      docs = _.sortBy docs, (d) -> d.title
       _.each docs, (doc) ->
         doc.selected = if (doc.id is documentId())
           'active'
