@@ -231,10 +231,11 @@ setupUI = ->
       utils.showPage "list-page"
       $allLists = $('#all-docs ul')
       _.each docs, (doc) ->
-        doc.selected = if (doc.id is documentId())
-          'active'
+        if (doc.id is documentId())
+          doc.selected = 'active'
+          document.title = doc.title
         else
-          ''
+          doc.selected = ''
         $allLists.append renderListLink(doc)
       setElementsVisibility()
       openDocument() if documentId()
