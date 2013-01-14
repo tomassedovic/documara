@@ -9,6 +9,12 @@ exports.isSessionLoggedIn = isSessionLoggedIn = (session) ->
 exports.attach = (server, db) ->
 
   requireLoggedIn = (req, res, next) ->
+    if req.headers['x-documara-key']?
+      return requireAPIKeyLogin(req, res, next)
+    else
+      return requirePasswordOrSessionLogin(req, res, next)
+
+  requirePasswordOrSessionLogin = (req, res, next) ->
     if isSessionLoggedIn(req.session)
       return next()
 
@@ -22,6 +28,15 @@ exports.attach = (server, db) ->
         return next()
       else
         return next(new InvalidCredentialsError)
+
+  requireAPIKeyLogin = (req, res, next) ->
+    db.validAPIKey req.headers['x-documara-key'], (err, valid, email) ->
+      return next(err) if err?
+      if valid
+        req.session.user = { email: email }
+        next()
+      else
+        return next(new InvalidAPIKeyLoginError)
 
 
   server.get '/api/login', (req, res) ->
@@ -46,7 +61,21 @@ exports.attach = (server, db) ->
     res.redirect '/'
 
 
-  server.post '/api/documents/', requireLoggedIn, (req, res) ->
+  server.post '/api/keys/', requirePasswordOrSessionLogin, (req, res) ->
+    name = req.body.name or ''
+    db.createAPIKey req.session.user.email, name, (err, api_key) ->
+      if err?
+        return sendJSON res, { error: err }, 400
+      return sendJSON res, { key: api_key}, 201
+
+
+  server.get '/api/keys/', requirePasswordOrSessionLogin, (req, res) ->
+    db.listAPIKeys req.session.user.email, (err, keys) ->
+      if err?
+        return sendJSON res, { error: err }, 400
+      return sendJSON res, keys, 200
+
+  server.post '/api/documents/', requirePasswordOrSessionLogin, (req, res) ->
     doc =
       body: ''
       title: ''
@@ -121,6 +150,8 @@ exports.attach = (server, db) ->
       sendJSON res, {"error": "you must be logged in"}, 401
     else if err instanceof InvalidCredentialsError
       sendJSON res, {"error": "invalid email or password"}, 401
+    else if err instanceof InvalidAPIKeyLoginError
+      sendJSON res, {"error": "invalid email or API key"}, 401
     else
       next err
 
@@ -134,6 +165,7 @@ sendJSON = (res, data, code) ->
 
 MustBeLoggedInError = (() ->)
 InvalidCredentialsError = (() ->)
+InvalidAPIKeyLoginError = (() ->)
 
 getBasicAuthCredentials = (req) ->
   basic_auth = req.headers['authorization']

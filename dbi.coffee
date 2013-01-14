@@ -66,6 +66,58 @@ dbi = (con, model) ->
         return callback null, bcrypt.compareSync(password, user.password)
 
 
+    createAPIKey: (login, name, callback) ->
+      callback = callback ? (->)
+      api_key = crypto.randomBytes(10).toString('hex')
+      async.waterfall [
+        (cb) =>
+          @findUserIdFromLogin login, cb
+        (user_id, cb) ->
+          key_meta =
+            key: api_key
+            owner_id: user_id
+            name: name
+            created: format_date(new XDate(true))
+          con.hmset "documara:api_keys:#{api_key}", key_meta, cb
+      ], (err) ->
+        if err?
+          return callback err, null
+        return callback null, api_key
+
+
+    validAPIKey: (api_key, callback) ->
+      callback = callback ? (->)
+      async.waterfall [
+        (cb) ->
+          con.hget "documara:api_keys:#{api_key}", 'owner_id', cb
+        (owner_id, cb) =>
+          if owner_id?
+            return con.hget "documara:user:#{owner_id}", 'email', cb
+          else
+            return cb("api_key_error", null)
+      ], (err, email) ->
+        if err is "api_key_error"
+          return callback(null, false, null)
+        if err?
+          return callback(err, null, null)
+        return callback(null, email?, email)
+
+
+    listAPIKeys: (login, callback) ->
+      callback = callback ? (->)
+      async.waterfall [
+        (cb) =>
+          @findUserIdFromLogin login, cb
+        (user_id, cb) ->
+          con.keys "documara:api_keys:*", cb
+        (key_ids, cb) ->
+          async.map key_ids, ((path, cb) -> con.hgetall(path, cb)), cb
+      ], (err, keys) ->
+        if err?
+          return callback err, null
+        return callback(null, u_.map(keys, (k) -> u_.pick(k, 'key', 'name', 'created')))
+
+
     createDocument: (owner_login, doc, callback) ->
       callback = (() ->) unless callback?
 
