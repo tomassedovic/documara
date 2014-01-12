@@ -55,10 +55,15 @@ session_secret = process.env.SESSION_SECRET ? require('crypto').randomBytes(20).
 port = process.env.PORT ? 8080
 serve_assets = app.get('env') is 'development'
 
+
+dayInMs = 24 * 60 * 60 * 1000
+
 sessionConfig =
   key: 'sid'
   secret: session_secret
-  store: new RedisSessionStore
+  store: new RedisSessionStore()
+  cookie:
+    maxAge: 7 * dayInMs
 
 app.use connect.logger()
 app.use connect.cookieParser()
