@@ -12,7 +12,12 @@
 
 # Adding a user #
 
-TODO :-(
+Run this:
+
+    $ EMAIL=me@example.com PASSWORD=password node create-user.js
+
+You should of course specify your own EMAIL and PASSWORD values. Redis has to
+be running for this to work, the app doesn't have to.
 
 
 # Production #
