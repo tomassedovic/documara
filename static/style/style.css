@@ -113,7 +113,8 @@ body {
 #items li.drag-helper { background: white; }
 #items li.drag-helper .description { background: white; }
 
-#items .finished.active + .title { text-decoration: line-through; }
+#items .finished.active ~ .title { text-decoration: line-through; }
+#items .finished.active ~ pre.description { text-decoration: line-through; }
 
 #items .remove-item { color: red; }
 
