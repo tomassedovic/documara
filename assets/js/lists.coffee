@@ -124,7 +124,7 @@ openDocument = ->
         .css({height: $this.height()})
         .offset($this.offset())
         .val($this.text())
-        .css({visibility: 'visible'})
+        .css({visibility: 'visible', "z-index": 1000})
         .focus()
 
 
@@ -133,7 +133,7 @@ openDocument = ->
     $descriptionEditBox = $('<textarea />')
       .appendTo($('body'))
       .height(defaultDescriptionHeight)
-      .css({visibility: 'hidden'})
+      .css({visibility: 'hidden', "z-index": 1000})
 
     hideDescriptionEditBox = ->
       $descriptionEditBox
