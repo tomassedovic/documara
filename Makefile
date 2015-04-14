@@ -16,7 +16,7 @@ server: appserver.js api.js dbi.js
 assets: $(ASSETS_DIR)/documents.js $(ASSETS_DIR)/lists.js $(ASSETS_DIR)/utils.js
 
 run:
-	PORT=8080 SESSION_SECRET="insecure" NODE_ENV=development $(CC) appserver.coffee
+	npm install && PORT=8080 SESSION_SECRET="insecure" NODE_ENV=development $(CC) appserver.coffee
 
 clean:
 	rm -rf $(BUILD_DIR)
