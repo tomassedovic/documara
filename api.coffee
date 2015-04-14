@@ -16,6 +16,8 @@ exports.attach = (server, db) ->
 
   requirePasswordOrSessionLogin = (req, res, next) ->
     if isSessionLoggedIn(req.session)
+      req.session.touch()
+      req.session.cookie.expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       return next()
 
     [email, password] = getBasicAuthCredentials(req)
