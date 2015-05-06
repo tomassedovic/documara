@@ -37,4 +37,6 @@ Run redis database:
 
 Build documara image:
 
+    sudo docker build -t documara/app .
+
 Run documara container:
