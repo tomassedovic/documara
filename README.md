@@ -28,3 +28,13 @@ such as nginx.  When running documara, set these environment variables:
     NODE_ENV=production
     PORT=8080  # or whatever
     SESSION_SECRET=<a long secret string, shouldn't change when app restarts>
+
+
+# Docker #
+
+Run redis database:
+    sudo docker run --name documara-redis -d redis:3 redis-server --appendonly yes --appendfsync everysec
+
+Build documara image:
+
+Run documara container:
