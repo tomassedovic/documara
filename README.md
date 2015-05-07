@@ -14,7 +14,8 @@
 
 Run this:
 
-    $ EMAIL=me@example.com PASSWORD=password node create-user.js
+    $ EMAIL=me@example.com PASSWORD=password \
+        node_modules/coffee-script/bin/coffee appserver.coffee --create-user
 
 You should of course specify your own EMAIL and PASSWORD values. Redis has to
 be running for this to work, the app doesn't have to.
