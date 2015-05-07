@@ -99,14 +99,54 @@ sharejsOptions =
     hostname: REDIS_HOST
   auth: authenticateSharejs
 
-sharejs.attach app, sharejsOptions
-db = dbi.connect(app.model, REDIS_PORT, REDIS_HOST)
-api.attach(app, db)
 
+if "--create-user" in process.argv
+  # create user from EMAIL and PASSWORD environment variables
+  redis = require('redis').createClient(REDIS_PORT, REDIS_HOST)
+  crypto = require('crypto')
+  bcrypt = require('bcrypt')
 
-# If we're run by `coffee --watch`, close the current server before listening
-# on port
-process.documara_server.close() if process.documara_server?.close?
+  callback = (err, ok) ->
+    if err
+      console.error("Error:", err)
+      process.exit(1)
+    else
+      console.info("Success:", ok)
+      process.exit(0)
 
-process.documara_server = app.listen port
-console.log "Server running at port #{port}"
+  email = process.env.EMAIL
+  password = process.env.PASSWORD
+  if (not email) or (not password)
+    callback "Missing EMAIL or PASSWORD"
+
+  user =
+    email: email,
+    password: bcrypt.hashSync(password, bcrypt.genSaltSync())
+
+  redis.hmget "documara:login-user-mapping", email, (err, values) ->
+    if err
+      return callback(err, null)
+    # values is `[null]` if not previously present, `["some email"]` otherwise
+    if values[0]
+      return callback("User '#{email}' already exists.", null)
+    user_id = crypto.randomBytes(4).toString('hex')
+    redis.hmset "documara:user:" + user_id, user, (err, ok) ->
+      if err
+        return callback("User ID '#{user_id}' already exists.", null)
+      redis.hmset "documara:login-user-mapping", email, user_id, (err, ok) ->
+        if err
+          return callback("User '#{email}' could not be created.", null)
+        return callback(null, "User '#{email}' was created.")
+
+else
+  # run server
+  sharejs.attach app, sharejsOptions
+  db = dbi.connect(app.model, REDIS_PORT, REDIS_HOST)
+  api.attach(app, db)
+
+  # If we're run by `coffee --watch`, close the current server before listening
+  # on port
+  process.documara_server.close() if process.documara_server?.close?
+
+  process.documara_server = app.listen port
+  console.log "Server running at port #{port}"

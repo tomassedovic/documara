@@ -32,13 +32,23 @@ such as nginx.  When running documara, set these environment variables:
 
 # Docker #
 
-Run redis database:
-    sudo docker run --name documara-redis -d redis:3 redis-server --appendonly yes --appendfsync everysec
+Get the images:
 
-Build documara image:
-
+    sudo docker pull redis:3
     sudo docker build -t documara/app .
 
-Run documara container:
+Run redis database:
+    sudo docker run --name documara-redis -d redis:3 redis-server \
+        --appendonly yes --appendfsync everysec
 
-    sudo docker run --link documara-redis:redis --name documara-app documara/app
+Create users:
+
+    sudo docker run --rm -t -i --link documara-redis:redis \
+        -e EMAIL=test@example.com \
+        -e PASSWORD=password documara/app \
+        /create-user
+
+Run documara application:
+
+    sudo docker run --link documara-redis:redis --name documara-app \
+        -p $HOST_PORT:8080 documara/app

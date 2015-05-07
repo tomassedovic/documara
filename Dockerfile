@@ -13,8 +13,12 @@ RUN /usr/bin/chown --recursive documara:documara $HOME
 RUN yum install -y make && su -c 'npm install' documara && yum remove -y make
 
 
-ADD assets static *.coffee *.js  ./
+COPY *.coffee *.js  ./
+COPY assets assets
+COPY static static
+COPY create-user.sh /create-user
 RUN /usr/bin/chown --recursive documara:documara $HOME
+RUN node_modules/coffee-script/bin/coffee --output static/js/ --compile assets/js
 
 USER documara
 
