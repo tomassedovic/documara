@@ -1,4 +1,4 @@
-redis = require('redis').createClient();
+redis = require('redis')
 crypto = require 'crypto'
 bcrypt = require 'bcrypt'
 u_ = require 'underscore'
@@ -314,7 +314,8 @@ isShareJSModel = (model) ->
   model and u_.all(required_functions, (f) -> f of model)
 
 
-exports.connect = (model) ->
+exports.connect = (model, redis_port, redis_host) ->
   unless isShareJSModel(model)
     throw new Error('You must specify a ShareJS model object.')
-  return dbi(redis, model)
+  redis_client = redis.createClient(redis_port, redis_host);
+  return dbi(redis_client, model)

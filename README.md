@@ -40,3 +40,5 @@ Build documara image:
     sudo docker build -t documara/app .
 
 Run documara container:
+
+    sudo docker run --link documara-redis:redis --name documara-app documara/app

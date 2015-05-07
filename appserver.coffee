@@ -54,14 +54,15 @@ app = express()
 session_secret = process.env.SESSION_SECRET ? require('crypto').randomBytes(20).toString('hex')
 port = process.env.PORT ? 8080
 serve_assets = app.get('env') is 'development'
-
+REDIS_PORT = process.env.REDIS_PORT ? 6379
+REDIS_HOST = process.env.REDIS_HOST ? '127.0.0.1'
 
 dayInMs = 24 * 60 * 60 * 1000
 
 sessionConfig =
   key: 'sid'
   secret: session_secret
-  store: new RedisSessionStore()
+  store: new RedisSessionStore({port: REDIS_PORT, host: REDIS_HOST})
   cookie:
     maxAge: 7 * dayInMs
 
@@ -94,10 +95,12 @@ if serve_assets
 sharejsOptions =
   db:
     type: 'redis'
+    port: REDIS_PORT
+    hostname: REDIS_HOST
   auth: authenticateSharejs
 
 sharejs.attach app, sharejsOptions
-db = dbi.connect app.model
+db = dbi.connect(app.model, REDIS_PORT, REDIS_HOST)
 api.attach(app, db)
 
 
