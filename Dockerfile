@@ -1,6 +1,4 @@
-FROM centos:7
-
-RUN yum install -y epel-release && yum -y update && yum -y install nodejs npm
+FROM documara/node
 
 ENV HOME /var/lib/documara
 RUN useradd --home-dir $HOME documara
