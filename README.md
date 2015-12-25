@@ -37,6 +37,7 @@ Get the images:
 
     sudo docker pull redis:3
     sudo docker build -t documara/node .
+    sudo docker build -t documara/node:latest documara-node-dockerfile
     sudo docker build -t documara/app .
 
 Run redis database:

@@ -1,4 +1,4 @@
-FROM documara/node
+FROM documara/node:latest
 
 ENV HOME /var/lib/documara
 RUN useradd --home-dir $HOME documara
@@ -8,7 +8,7 @@ WORKDIR $HOME
 # Install node modules:
 ADD package.json ./
 RUN /usr/bin/chown --recursive documara:documara $HOME
-RUN yum install -y make && su -c 'npm install' documara && yum remove -y make
+RUN yum install -y make gcc-c++ && su -c 'npm install' documara && yum remove -y make gcc-c++
 
 
 COPY *.coffee *.js  ./

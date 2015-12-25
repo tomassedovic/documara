@@ -5,7 +5,7 @@
   "author": "Tomas Sedovic <tomas@sedovic.cz>",
   "dependencies": {
     "async": "0.1.x",
-    "bcrypt": "0.7.x",
+    "bcrypt": "0.8.x",
     "connect": "2.7.x",
     "connect-assets": "2.3.x",
     "connect-redis": "1.4.x",
