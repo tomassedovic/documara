@@ -57,12 +57,19 @@ serve_assets = app.get('env') is 'development'
 REDIS_PORT = process.env.REDIS_PORT ? 6379
 REDIS_HOST = process.env.REDIS_HOST ? '127.0.0.1'
 
-dayInMs = 24 * 60 * 60 * 1000
+dayInSec = 24 * 60 * 60
+dayInMs = dayInSec * 1000
 
 sessionConfig =
   key: 'sid'
   secret: session_secret
-  store: new RedisSessionStore({port: REDIS_PORT, host: REDIS_HOST})
+  # NOTE: connect-redis sets a Redis TTL for about 1 day by default.
+  # Which is why we were being logged out so early.
+  #
+  # TODO: There may be a way to disable the TTL entirely. Not sure
+  # it's a good thing but we may think about that. Or update the TTL
+  # just like we're doing with the cookie (theoreticaly)
+  store: new RedisSessionStore({port: REDIS_PORT, host: REDIS_HOST, ttl: 100 * dayInSec})
   cookie:
     maxAge: 7 * dayInMs
 
