@@ -39,8 +39,15 @@ Get the images:
     sudo docker build -t documara/app .
 
 Run redis database:
+
     sudo docker run --name documara-redis -d redis:3 redis-server \
         --appendonly yes --appendfsync everysec
+
+NOTE: the data will be stored on the host at:
+
+    $ docker inspect  -f "{{range .Mounts}}{{.Source}}{{end}}" documara-redis
+
+Which is generally under `/var/lib/docker/volumes/`.
 
 Create users:
 
