@@ -40,9 +40,17 @@ Get the images:
     sudo docker build -t documara/node:latest documara-node-dockerfile
     sudo docker build -t documara/app .
 
+Push the images to the registry:
+
+    sudo docker tag documara/app:latest tsedovic/documara:$VERSION
+    sudo docker push tsedovic/documara:$VERSION
+    sudo docker tag documara/node:$VERSION tsedovic/documara-node:$VERSION
+    sudo docker push tsedovic/documara-node:$VERSION
+
 Run redis database:
 
-    sudo docker run --name documara-redis -d redis:3 redis-server \
+    sudo docker run -v /var/lib/docker/volumes/documara-redis:/data  \
+        -d --name documara-redis redis:3 redis-server  \
         --appendonly yes --appendfsync everysec
 
 NOTE: the data will be stored on the host at:
@@ -60,5 +68,5 @@ Create users:
 
 Run documara application:
 
-    sudo docker run --link documara-redis:redis --name documara-app \
+    sudo docker run --link documara-redis:redis -d --name documara-app  \
         -p $HOST_PORT:8080 documara/app

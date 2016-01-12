@@ -1,4 +1,6 @@
-FROM documara/node:latest
+FROM documara/node:4.2.4
+
+LABEL version=0.2.0
 
 ENV HOME /var/lib/documara
 RUN useradd --home-dir $HOME documara
