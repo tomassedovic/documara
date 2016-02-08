@@ -44,8 +44,10 @@ Push the images to the registry:
 
     sudo docker tag documara/app:latest tsedovic/documara:$VERSION
     sudo docker push tsedovic/documara:$VERSION
-    sudo docker tag documara/node:$VERSION tsedovic/documara-node:$VERSION
-    sudo docker push tsedovic/documara-node:$VERSION
+
+    sudo docker build -t tsedovic/node:$VERSION .
+    sudo docker tag documara/node:$VERSION tsedovic/node:$VERSION
+    sudo docker push tsedovic/node:$VERSION
 
 Run redis database:
 

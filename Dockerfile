@@ -1,4 +1,4 @@
-FROM documara/node:4.2.4
+FROM tsedovic/node:4.2.6
 
 LABEL version=0.2.0
 
