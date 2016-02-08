@@ -36,18 +36,14 @@ such as nginx.  When running documara, set these environment variables:
 Get the images:
 
     sudo docker pull redis:3
-    sudo docker build -t documara/node .
-    sudo docker build -t documara/node:latest documara-node-dockerfile
-    sudo docker build -t documara/app .
+    sudo docker pull tsedovic/node:$VERSION
+    sudo docker build -t tsedovic/documara:latest .
 
 Push the images to the registry:
 
-    sudo docker tag documara/app:latest tsedovic/documara:$VERSION
+    sudo docker tag tsedovic/documara:latest tsedovic/documara:$VERSION
     sudo docker push tsedovic/documara:$VERSION
 
-    sudo docker build -t tsedovic/node:$VERSION .
-    sudo docker tag documara/node:$VERSION tsedovic/node:$VERSION
-    sudo docker push tsedovic/node:$VERSION
 
 Run redis database:
 
@@ -65,10 +61,10 @@ Create users:
 
     sudo docker run --rm -t -i --link documara-redis:redis \
         -e EMAIL=test@example.com \
-        -e PASSWORD=password documara/app \
+        -e PASSWORD=password tsedovic/documara \
         /create-user
 
 Run documara application:
 
     sudo docker run --link documara-redis:redis -d --name documara-app  \
-        -p $HOST_PORT:8080 documara/app
+        -p $HOST_PORT:8080 tsedovic/documara
