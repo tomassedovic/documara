@@ -41,9 +41,10 @@ Get the images:
 
 Push the images to the registry:
 
+    export VERSION=0.3.0   # This should match the `LABEL version` in Dockerfile
     sudo docker tag tsedovic/documara:latest tsedovic/documara:$VERSION
     sudo docker push tsedovic/documara:$VERSION
-
+    sudo docker push tsedovic/documara:latest
 
 Run redis database:
 
