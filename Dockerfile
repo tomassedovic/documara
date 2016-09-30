@@ -1,6 +1,6 @@
-FROM tsedovic/node:4.3.0
+FROM tsedovic/node:4.6.0
 
-LABEL version=0.3.0
+LABEL version=0.3.1
 
 ENV HOME /var/lib/documara
 RUN useradd --home-dir $HOME documara
