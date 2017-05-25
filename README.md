@@ -12,8 +12,8 @@ For some motivation behind this project, see:
 https://aimlesslygoingforward.com/blog/2017/05/25/documara/
 
 
-This is essentially a code-dump of a private repo. I'm be happy to
-answer question but be prepared to do some spelunking.
+This is essentially a code-dump of a private repo. I'm happy to answer
+question but be prepared to do some spelunking.
 
 
 # Development #
