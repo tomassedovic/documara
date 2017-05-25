@@ -1,3 +1,21 @@
+# Documara: Notes App That Treasures Your Data
+
+This is a dusty old project of mine. It's a web-based note-taking app
+that utilises Operational Transformation to sync notes.
+
+This means it handles conflicts automatically and you should never
+lose anything you enter, even if you have the app open on multiple
+windows and type into them all at the same time.
+
+For some motivation behind this project, see:
+
+https://aimlesslygoingforward.com/blog/2017/05/25/documara/
+
+
+This is essentially a code-dump of a private repo. I'm be happy to
+answer question but be prepared to do some spelunking.
+
+
 # Development #
 
 0. Prerequisities: `node`, `npm` and `redis`
@@ -74,3 +92,9 @@ Run documara application:
 # License
 
 AGPLv3 or later
+
+# Author
+
+Tomas Sedovic <tomas@sedovic.cz>
+https://aimlesslygoingforward.com/
+IRC: shadower
