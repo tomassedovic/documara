@@ -69,3 +69,8 @@ Run documara application:
 
     sudo docker run --link documara-redis:redis -d --name documara-app  \
         -p $HOST_PORT:8080 tsedovic/documara
+
+
+# License
+
+AGPLv3 or later
