@@ -16,6 +16,14 @@ This is essentially a code-dump of a private repo. I'm happy to answer
 question but be prepared to do some spelunking.
 
 
+TODO: move the code to sharedb?
+
+https://github.com/share/sharedb
+
+Seems to be the maintained successor of sharejs. Let's investigate.
+
+
+
 # Development #
 
 0. Prerequisities: `node`, `npm` and `redis`
